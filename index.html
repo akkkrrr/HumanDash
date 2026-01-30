@@ -3,22 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Dashboard | Gym Log</title>
+    <title>Human Dashboard | Gym</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <main class="container">
         <header>
             <h1>Gym Log</h1>
-            <p class="subtitle">Human Dashboard v1.0</p>
+            <p class="subtitle">Human Dashboard v1.1</p>
         </header>
 
-        <section class="card">
-            <h2>Kirjaa treeni</h2>
+        <section id="gym-section" class="card">
+            <h2>Kirjaa liike</h2>
             <form id="gym-form">
                 <div class="form-group">
                     <label for="exercise">Liikkeen nimi</label>
-                    <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Penkkipunnerrus" required autocomplete="off">
+                    <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Kyykky" required autocomplete="off">
                     <datalist id="exercise-helpers"></datalist>
                 </div>
 
@@ -35,24 +36,23 @@
 
                 <div class="form-group">
                     <label for="weights">Painot (kg)</label>
-                    <input type="text" id="weights" placeholder="Esim. 80 tai 80, 85, 80" required>
-                    <small>Erota eri sarjojen painot pilkulla.</small>
+                    <input type="text" id="weights" placeholder="Esim. 100 tai 100, 105, 110" required>
+                    <small>Käytä pilkkua, jos paino muuttuu sarjojen välillä.</small>
                 </div>
 
                 <div class="form-group checkbox-group">
                     <input type="checkbox" id="failure">
-                    <label for="failure">Failureen asti?</label>
+                    <label for="failure">Sarja tehty failureen?</label>
                 </div>
 
-                <button type="submit" id="submit-btn">Tallenna sarja</button>
+                <button type="submit" class="btn-add">Lisää liike treeniin</button>
             </form>
         </section>
 
         <section class="history-section">
-            <h2>Viimeisimmät kirjaukset</h2>
-            <div id="logs-container" class="grid-list">
-                <p class="loading">Ladataan tietoja...</p>
-            </div>
+            <h2 id="history-title">Treenihistoria</h2>
+            <div id="logs-container">
+                </div>
         </section>
     </main>
 

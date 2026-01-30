@@ -1,113 +1,120 @@
 import { db } from './firebase.js';
 import { 
-    collection, 
-    addDoc, 
-    query, 
-    orderBy, 
-    onSnapshot, 
-    serverTimestamp 
+    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// DOM-elementit
 const gymForm = document.getElementById('gym-form');
 const logsContainer = document.getElementById('logs-container');
+const gymSection = document.getElementById('gym-section');
 const datalist = document.getElementById('exercise-helpers');
-const startBtn = document.createElement('button'); // Luodaan aloitusnappi dynaamisesti
 
-// Sovelluksen tila
+// Hallintanapit
+const header = document.querySelector('header');
+const actionDiv = document.createElement('div');
+actionDiv.className = 'action-bar';
+header.appendChild(actionDiv);
+
+const startBtn = document.createElement('button');
+startBtn.textContent = '➕ Aloita kirjaus';
+startBtn.className = 'btn-primary';
+
+const saveBtn = document.createElement('button');
+saveBtn.textContent = '💾 Tallenna treeni ja lopeta';
+saveBtn.className = 'btn-success';
+saveBtn.style.display = 'none';
+
+actionDiv.appendChild(startBtn);
+actionDiv.appendChild(saveBtn);
+
 let currentWorkoutId = null;
 
-// --- ALOITUSNÄKYMÄN HALLINTA ---
-const setupHeader = () => {
-    const header = document.querySelector('header');
-    startBtn.textContent = '➕ Aloita uusi treeni';
-    startBtn.id = 'start-workout-btn';
-    startBtn.style.backgroundColor = '#10b981'; // Vihreä väri aloitukselle
-    header.appendChild(startBtn);
-    
-    // Piilotetaan lomake aluksi
-    gymForm.parentElement.style.display = 'none';
-};
-setupHeader();
+// --- TAPAHTUMAT ---
 
 startBtn.addEventListener('click', () => {
-    currentWorkoutId = 'workout-' + Date.now(); // Luodaan uniikki ID aikaleimasta
-    gymForm.parentElement.style.display = 'block';
+    currentWorkoutId = 'workout-' + Date.now();
+    gymSection.style.display = 'block';
     startBtn.style.display = 'none';
-    alert("Treeni aloitettu! Voit nyt lisätä liikkeitä.");
+    saveBtn.style.display = 'block';
 });
 
-// --- VOLYYMIN LASKENTA ---
-function calculateVolume(sets, reps, weightsStr) {
-    const weights = weightsStr.split(',').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
-    if (weights.length === 1) return sets * reps * weights[0];
-    const totalWeight = weights.reduce((a, b) => a + b, 0);
-    return reps * totalWeight;
-}
+saveBtn.addEventListener('click', () => {
+    currentWorkoutId = null;
+    gymSection.style.display = 'none';
+    saveBtn.style.display = 'none';
+    startBtn.style.display = 'block';
+});
 
-// --- DATAN TALLENNUS ---
 gymForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
-    const exercise = document.getElementById('exercise').value;
+    const exercise = document.getElementById('exercise').value.trim();
     const sets = parseInt(document.getElementById('sets').value);
     const reps = parseInt(document.getElementById('reps').value);
     const weights = document.getElementById('weights').value;
     const failure = document.getElementById('failure').checked;
+    
+    // Volyymin laskenta
+    const wArr = weights.split(',').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
+    const volume = wArr.length === 1 ? sets * reps * wArr[0] : reps * wArr.reduce((a,b) => a+b, 0);
 
-    const volume = calculateVolume(sets, reps, weights);
+    await addDoc(collection(db, "gymEntries"), {
+        workoutId: currentWorkoutId,
+        exercise: exercise.toLowerCase(),
+        sets, reps, weights, failure, volume,
+        createdAt: serverTimestamp()
+    });
+    gymForm.reset();
+    document.getElementById('exercise').focus();
+});
 
-    try {
-        await addDoc(collection(db, "gymEntries"), {
-            workoutId: currentWorkoutId, // TÄRKEÄ: sitoo liikkeen tiettyyn treeniin
-            exercise: exercise.toLowerCase(),
-            sets,
-            reps,
-            weights,
-            failure,
-            volume,
-            createdAt: serverTimestamp()
-        });
-        gymForm.reset();
-        document.getElementById('exercise').focus(); // Helpottaa seuraavan liikkeen lisäystä
-    } catch (error) {
-        console.error("Virhe: ", error);
+// --- HISTORIAN NÄYTTÄMINEN RYHMITELTYNÄ ---
+
+onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (snapshot) => {
+    logsContainer.innerHTML = '';
+    const workouts = {}; // Tähän ryhmitellään data workoutId:n mukaan
+
+    snapshot.forEach((doc) => {
+        const data = doc.data();
+        const id = doc.id;
+        const wId = data.workoutId || 'legacy'; // Vanhat merkinnät ilman ID:tä
+        
+        if (!workouts[wId]) {
+            workouts[wId] = {
+                date: data.createdAt?.toDate().toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }) || 'Hetki sitten',
+                entries: []
+            };
+        }
+        workouts[wId].entries.push({ id, ...data });
+    });
+
+    // Luodaan visuaaliset treenikortit
+    for (const wId in workouts) {
+        const workout = workouts[wId];
+        const workoutCard = document.createElement('div');
+        workoutCard.className = 'workout-card';
+        
+        let entriesHtml = workout.entries.map(entry => `
+            <div class="entry-row">
+                <div class="entry-main">
+                    <strong>${entry.exercise}</strong>: ${entry.sets}x${entry.reps} @ ${entry.weights}kg 
+                    ${entry.failure ? '<span class="fail-badge">FAIL</span>' : ''}
+                </div>
+                <div class="entry-actions">
+                    <button onclick="deleteEntry('${entry.id}')" class="btn-delete">❌</button>
+                </div>
+            </div>
+        `).join('');
+
+        workoutCard.innerHTML = `
+            <div class="workout-header">${workout.date}</div>
+            <div class="workout-body">${entriesHtml}</div>
+        `;
+        logsContainer.appendChild(workoutCard);
     }
 });
 
-// --- REAALIAIKAINEN LUKU ---
-const q = query(collection(db, "gymEntries"), orderBy("createdAt", "desc"));
-
-onSnapshot(q, (snapshot) => {
-    logsContainer.innerHTML = '';
-    const exerciseNames = new Set();
-    
-    // Ryhmitellään liikkeet treenien mukaan (Yksinkertaistettu listaus)
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        if (data.exercise) exerciseNames.add(data.exercise);
-
-        const date = data.createdAt?.toDate() ? data.createdAt.toDate().toLocaleString('fi-FI', { 
-            weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' 
-        }) : 'Tallennetaan...';
-        
-        const logHtml = `
-            <div class="log-item" style="border-left: 4px solid ${data.workoutId === currentWorkoutId ? '#38bdf8' : '#334155'}">
-                <div class="log-info">
-                    <h4>${data.exercise} ${data.failure ? '<br><span style="color:#ef4444; font-size:0.7rem;">⚠️ SARJA TEHTY FAILUREEN</span>' : ''}</h4>
-                    <div class="log-details">${data.sets} x ${data.reps} (${data.weights} kg) • ${date}</div>
-                </div>
-                <div class="log-volume">${data.volume} kg</div>
-            </div>
-        `;
-        logsContainer.innerHTML += logHtml;
-    });
-
-    // Päivitetään autocomplete
-    datalist.innerHTML = '';
-    exerciseNames.forEach(name => {
-        const option = document.createElement('option');
-        option.value = name.charAt(0).toUpperCase() + name.slice(1);
-        datalist.appendChild(option);
-    });
-});
+// Poistofunktio (globaali jotta onclick löytää sen)
+window.deleteEntry = async (id) => {
+    if(confirm("Poistetaanko tämä liike?")) {
+        await deleteDoc(doc(db, "gymEntries", id));
+    }
+};

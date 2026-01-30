@@ -63,3 +63,92 @@ button {
 }
 
 .log-volume { color: var(--primary); font-weight: bold; }
+.action-container {
+    margin-bottom: 20px;
+}
+
+.btn-start {
+    background-color: #10b981 !important; /* Vihreä */
+    color: white !important;
+}
+
+.btn-end {
+    background-color: #ef4444 !important; /* Punainen */
+    color: white !important;
+}
+
+.log-date {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.fail-text {
+    color: #ef4444;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* Piilotetaan lomake aluksi tyylillä */
+#gym-form-parent {
+    display: none;
+}
+/* Lisää nämä aiemman CSS:n jatkoksi */
+
+.action-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.workout-card {
+    background: var(--card);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.workout-header {
+    background: #334155;
+    padding: 10px 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.workout-body {
+    padding: 10px;
+}
+
+.entry-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 5px;
+    border-bottom: 1px solid #2d3a4f;
+}
+
+.entry-row:last-child { border-bottom: none; }
+
+.entry-main { font-size: 0.95rem; text-transform: capitalize; }
+
+.fail-badge {
+    background: #ef4444;
+    color: white;
+    font-size: 0.6rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin-left: 5px;
+}
+
+.btn-delete {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 5px;
+}
+
+.btn-success { background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
