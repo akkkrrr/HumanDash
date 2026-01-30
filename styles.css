@@ -1,0 +1,65 @@
+/*styles.css - Päivitetty moderni versio */
+:root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --primary: #38bdf8;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border: #334155;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 24px;
+}
+
+h1 { font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--primary); }
+
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    background: #0f172a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+}
+
+button {
+    background: var(--primary);
+    color: #0f172a;
+    font-weight: bold;
+    border: none;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.log-item {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.log-volume { color: var(--primary); font-weight: bold; }
