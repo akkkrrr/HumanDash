@@ -3,7 +3,7 @@ import {
     collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, setDoc, updateDoc, getDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 1. NAVIGOINTI ---
+// --- 1. NAVIGAATIO ---
 const navBtns = document.querySelectorAll('.nav-btn');
 const tabs = document.querySelectorAll('.tab-content');
 
@@ -44,7 +44,6 @@ finishBtn.style.display = 'none';
 actionDiv.appendChild(startBtn);
 actionDiv.appendChild(finishBtn);
 
-// Treenin aloitus
 startBtn.addEventListener('click', async () => {
     const workoutRef = doc(collection(db, "workouts"));
     currentWorkoutId = workoutRef.id;
@@ -54,15 +53,12 @@ startBtn.addEventListener('click', async () => {
     startBtn.style.display = 'none';
 });
 
-// Treenin lopetuslomake auki
 finishBtn.addEventListener('click', () => {
     summaryCard.style.display = 'block';
     gymSection.style.display = 'none';
     finishBtn.style.display = 'none';
-    summaryCard.scrollIntoView({ behavior: 'smooth' });
 });
 
-// Lopullinen tallennus
 finalSaveBtn.addEventListener('click', async () => {
     if(currentWorkoutId) {
         await updateDoc(doc(db, "workouts", currentWorkoutId), {
@@ -78,7 +74,6 @@ finalSaveBtn.addEventListener('click', async () => {
     gymForm.reset();
 });
 
-// Liikkeen tallennus/päivitys
 gymForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById('entry-id').value;
@@ -109,7 +104,6 @@ gymForm.addEventListener('submit', async (e) => {
             });
         }
         resetForm();
-        document.getElementById('exercise').focus();
     } catch (err) { console.error(err); }
 });
 
@@ -120,11 +114,9 @@ function resetForm() {
     document.getElementById('submit-btn').textContent = 'Lisää liike';
 }
 
-// --- 3. HISTORIA JA LAJITTELU ---
-
+// --- 3. HISTORIA JA DYNAAMINEN LAJITTELU ---
 function loadLogs(order = 'desc') {
     if (unsubscribeLogs) unsubscribeLogs();
-
     const q = query(collection(db, "gymEntries"), orderBy("createdAt", order));
     
     unsubscribeLogs = onSnapshot(q, async (snapshot) => {
@@ -134,23 +126,24 @@ function loadLogs(order = 'desc') {
             const d = doc.data();
             const wId = d.workoutId || 'legacy';
             if (!workoutGroups[wId]) {
-                const dateObj = d.createdAt?.toDate() || new Date();
-                workoutGroups[wId] = { entries: [], totalVol: 0, date: dateObj, notes: '' };
+                workoutGroups[wId] = { 
+                    entries: [], 
+                    totalVol: 0, 
+                    date: d.createdAt?.toDate() || new Date(),
+                    notes: '' 
+                };
             }
             workoutGroups[wId].entries.push({ id: doc.id, ...d });
             workoutGroups[wId].totalVol += (d.volume || 0);
         });
 
         logsContainer.innerHTML = '';
-
-        // Lajitellaan kortit (workoutGroups) aikaleiman mukaan
         const sortedIds = Object.keys(workoutGroups).sort((a, b) => {
             return order === 'desc' ? workoutGroups[b].date - workoutGroups[a].date : workoutGroups[a].date - workoutGroups[b].date;
         });
 
         for (const wId of sortedIds) {
             const g = workoutGroups[wId];
-            
             if (wId !== 'legacy') {
                 const wDoc = await getDoc(doc(db, "workouts", wId));
                 if(wDoc.exists()) g.notes = wDoc.data().notes || '';
@@ -177,9 +170,9 @@ function loadLogs(order = 'desc') {
             g.entries.forEach(e => {
                 const row = document.createElement('div');
                 row.className = 'entry-row';
-                
                 const info = document.createElement('div');
                 info.className = 'entry-main';
+                
                 const name = document.createElement('strong'); name.textContent = e.exercise;
                 const det = document.createElement('span'); det.textContent = ` ${e.sets}x${e.reps} @ ${e.weights}kg`;
                 info.appendChild(name); info.appendChild(det);
@@ -188,7 +181,6 @@ function loadLogs(order = 'desc') {
                     const f = document.createElement('span'); f.className = 'fail-badge'; f.textContent = 'FAIL';
                     info.appendChild(f);
                 }
-
                 const v = document.createElement('div'); v.className = 'entry-vol'; v.textContent = `${e.volume} kg volyymi`;
                 info.appendChild(v);
 
@@ -214,9 +206,8 @@ function loadLogs(order = 'desc') {
 }
 
 sortSelect.addEventListener('change', (e) => loadLogs(e.target.value));
-loadLogs('desc'); // Aloitus oletuksena uusin ensin
+loadLogs('desc');
 
-// GLOBAALIT
 window.editEntry = async (id) => {
     const s = await getDoc(doc(db, "gymEntries", id));
     if(s.exists()) {

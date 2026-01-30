@@ -29,11 +29,8 @@ body {
     background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    padding: 12px 0;
-    margin-bottom: 30px;
+    position: sticky; top: 0; z-index: 1000;
+    padding: 12px 0; margin-bottom: 30px;
 }
 
 .nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto; padding: 0 20px; }
@@ -43,38 +40,49 @@ body {
 .nav-btn { background: transparent; color: var(--text-muted); border: none; padding: 8px 12px; font-size: 0.75rem; font-weight: 700; border-radius: 8px; cursor: pointer; }
 .nav-btn.active { color: var(--primary); background: var(--primary-glow); }
 
-/* KORTIT */
+/* KORTIT & CV */
 .card { background: var(--card); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px; backdrop-filter: blur(10px); }
 .hero-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%); border-left: 4px solid var(--primary); }
-
-h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+h1 { font-size: 1.8rem; font-weight: 800; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
 h3 { text-transform: uppercase; font-size: 0.7rem; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 15px; }
+
+.cv-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 500px) { .cv-grid { grid-template-columns: 1fr 1fr; } }
+.wide-card { grid-column: 1 / -1; border-right: 4px solid var(--success); }
+.case-desc { font-size: 0.9rem; color: var(--primary); margin-bottom: 12px; font-weight: 600; }
+
+.tech-stack { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+.tag { background: #0f172a; padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; color: var(--primary); border: 1px solid var(--border); font-weight: 700; }
+
+.project-list { list-style: none; padding-left: 0; }
+.project-list li { font-size: 0.85rem; margin-bottom: 10px; padding-left: 15px; position: relative; color: var(--text); }
+.project-list li::before { content: "→"; position: absolute; left: 0; color: var(--primary); }
+.project-list li strong { color: var(--primary); display: block; font-size: 0.7rem; text-transform: uppercase; }
 
 /* GYM UI */
 .action-bar { margin-bottom: 20px; }
-.btn-primary { background: var(--primary); color: #0f172a; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-.btn-success { background: var(--success); color: white; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
+.btn-primary, .btn-success { padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
+.btn-primary { background: var(--primary); color: #0f172a; }
+.btn-success { background: var(--success); color: white; }
 .btn-add { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 14px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
 
 .form-group { margin-bottom: 15px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; display: block; text-transform: uppercase; }
 input { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: white; width: 100%; font-size: 1rem; }
-.checkbox-group { display: flex; align-items: center; gap: 10px; margin: 10px 0; cursor: pointer; font-size: 0.9rem; }
+.checkbox-group { display: flex; align-items: center; gap: 10px; margin: 10px 0; cursor: pointer; }
 
-/* LAJITTELU */
+/* LOGS */
 .logs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
 .sort-select { background: #0f172a; color: var(--primary); border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
 
-/* TREENIKORTIT */
 .tab-content { display: none; }
 .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
 .workout-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
 .active-workout-card { border-left: 4px solid var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
-
-.workout-header { background: rgba(51, 65, 85, 0.4); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+.workout-header { background: rgba(51, 65, 85, 0.4); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
 .workout-title { font-size: 0.75rem; font-weight: 800; color: var(--primary); }
 .workout-meta { font-size: 0.75rem; font-weight: 800; color: var(--success); }
 .time-stamp { font-size: 0.65rem; color: var(--text-muted); font-weight: 400; margin-left: 5px; }

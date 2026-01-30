@@ -25,27 +25,42 @@
         
         <section id="cv-tab" class="tab-content active">
             <div class="hero-card card">
-                <h1>Etunimi Sukunimi</h1>
-                <p class="subtitle">Full-stack Kehittäjä & Biohakkeri</p>
+                <h1>System Architect & Problem Solver</h1>
+                <p class="subtitle">"Ratkon sotkuisia ongelmia ja rakennan järjestelmiä."</p>
                 <div class="tech-stack">
-                    <span class="tag">JavaScript (ES6+)</span>
+                    <span class="tag">System Design</span>
+                    <span class="tag">Process Optimization</span>
                     <span class="tag">Firebase</span>
-                    <span class="tag">Vercel</span>
-                    <span class="tag">GitHub</span>
+                    <span class="tag">Full-stack Dev</span>
                 </div>
             </div>
 
             <div class="cv-grid">
-                <div class="card">
-                    <h3>Profiili</h3>
-                    <p>Kehitän työkaluja, jotka muuttavat datan suorituskyvyksi. Tämä Dashboard on Personal OS -projektini perusta.</p>
-                </div>
-                <div class="card">
-                    <h3>Projektit</h3>
+                <div class="card wide-card">
+                    <h3>Featured Case: Startup GSM Operator</h3>
+                    <p class="case-desc">Nollasta operatiiviseen kuntoon: datan, ihmisten ja logistiikan yhdistäminen.</p>
                     <ul class="project-list">
-                        <li><strong>Gym Engine v2</strong> – Hierarkkinen datamalli</li>
-                        <li><strong>Notebook Cal</strong> – Rakenteellinen kalenteri</li>
-                        <li><strong>Shared Tasks</strong> – Reaaliaikainen yhteistyö</li>
+                        <li><strong>Infrastruktuuri:</strong> Tilaustietokantojen, provisioinnin ja sopimusmallien arkkitehtuuri.</li>
+                        <li><strong>Prosessit:</strong> Ulkoistetun aspan siirto in-houseksi (24/7 päivystys optimoidulla tiimillä).</li>
+                        <li><strong>Logistiikka:</strong> Toimitusketjun ja saatekirjejärjestelmän rakentaminen.</li>
+                        <li><strong>Tulos:</strong> Vähemmän virheitä, pienempi henkilöstömäärä, laajempi toimenkuva.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>How I Work</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                        Opin kokeilemalla ja tekoälyä sparrauskumppanina käyttäen. 
+                        Saan asioita nopeasti liikkeelle, mutta teen niistä aina ymmärrettäviä ja mitattavia.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Interests</h3>
+                    <ul class="project-list">
+                        <li><strong>Data:</strong> FM-statsit & strategiapelit</li>
+                        <li><strong>Fysiikka:</strong> Gym Engine & Volyymit</li>
+                        <li><strong>Tulevaisuus:</strong> Kokkiopinnot & Gastronomia</li>
                     </ul>
                 </div>
             </div>
@@ -58,7 +73,7 @@
                 <h3>Päätä treeni</h3>
                 <div class="form-group">
                     <label>Treenin muistiinpanot</label>
-                    <input type="text" id="workout-notes" placeholder="Miten kulki? Fiilis, kesto...">
+                    <input type="text" id="workout-notes" placeholder="Fiilis, kesto, fokus...">
                 </div>
                 <button id="final-save-btn" class="btn-success">TALLENNA JA ARKISTOI</button>
             </div>
@@ -69,7 +84,7 @@
                     <input type="hidden" id="entry-id">
                     <div class="form-group">
                         <label>Liike</label>
-                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Penkkipunnerrus" required autocomplete="off">
+                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Kyykky" required autocomplete="off">
                         <datalist id="exercise-helpers"></datalist>
                     </div>
                     <div class="form-row">
@@ -77,8 +92,8 @@
                         <div class="form-group"><label>Toistot</label><input type="number" id="reps" required></div>
                     </div>
                     <div class="form-group">
-                        <label>Painot (kg) - <small>Erottele sarjat puolipisteellä ;</small></label>
-                        <input type="text" id="weights" placeholder="Esim. 80; 82,5; 85" required>
+                        <label>Painot (kg) - <small>Käytä puolipistettä ; sarjojen välissä</small></label>
+                        <input type="text" id="weights" placeholder="Esim. 72,5; 75; 80" required>
                     </div>
                     <label class="checkbox-group">
                         <input type="checkbox" id="failure"> <span>Failureen asti?</span>
@@ -98,10 +113,10 @@
         </section>
 
         <section id="vibe-tab" class="tab-content">
-            <div class="card"><h3>Vibe Tracker</h3><p>Tulossa: Mieliala, uni ja ravinteet.</p></div>
+            <div class="card"><h3>Vibe Tracker</h3><p>Seuraava moduuli: Mood & Biohacking.</p></div>
         </section>
         <section id="data-tab" class="tab-content">
-            <div class="card"><h3>Deep Analytics</h3><p>Tulossa: Volyymitrendit ja PR-seuranta.</p></div>
+            <div class="card"><h3>Analytics</h3><p>Tulossa: Volyymikäyrät ja systeemi-statsit.</p></div>
         </section>
 
     </main>
