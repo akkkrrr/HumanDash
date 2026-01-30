@@ -22,7 +22,69 @@
 
     <main class="container">
         <section id="cv-tab" class="tab-content active">
-            </section>
+            <div class="hero-card card">
+                <h1>System Architect & Process Fixer</h1>
+                <p class="subtitle">"Etsin järjestyksen sieltä, missä muut näkevät vain sotkua."</p>
+                <div class="tech-stack">
+                    <span class="tag">Problem Solving</span>
+                    <span class="tag">Process Logic</span>
+                    <span class="tag">Data Mapping</span>
+                    <span class="tag">Real-time Apps</span>
+                </div>
+            </div>
+
+            <div class="cv-grid">
+                <div class="card wide-card">
+                    <h3>Case #1: Startup GSM Operator</h3>
+                    <p class="case-desc">Kokonaisvaltaisen operatiivisen järjestelmän arkkitehtuuri.</p>
+                    <ul class="project-list">
+                        <li><strong>Infrastruktuuri:</strong> Tilaustietokantojen ja toimitusketjujen suunnittelu nollasta.</li>
+                        <li><strong>Optimointi:</strong> In-house asiakaspalvelun ja 24/7 päivystyslogiikan rakentaminen.</li>
+                        <li><strong>Tulos:</strong> Hallittu kasvu kaoottisessa startup-vaiheessa.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Case #2: Call Center Lead</h3>
+                    <p class="case-desc">Prosessien ja ammattimaisuuden palauttaminen.</p>
+                    <ul class="project-list">
+                        <li><strong>Rakenne:</strong> Koulutusmateriaalit ja raportointimallit kriisiyhtiöön.</li>
+                        <li><strong>Johtajuus:</strong> Tiimin ohjaus kohti rehdimpää toimintatapaa.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Case #3: Municipal Data Mapping</h3>
+                    <p class="case-desc">Kiinteistödatan verifiointi maastossa.</p>
+                    <ul class="project-list">
+                        <li><strong>Tarkkuus:</strong> Tuhansien rakennusten luokittelu ja datan siirto verottajan kantoihin.</li>
+                        <li><strong>Vastuu:</strong> Itsenäinen kenttätyö ja datan täsmäytys paikannusjärjestelmiin.</li>
+                    </ul>
+                </div>
+
+                <div class="card wide-card" style="border-right: 4px solid var(--primary);">
+                    <h3>The Human Side: Structural Construction</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Vastapainona digitaalisuudelle olen rakentanut omakotitaloja alusta loppuun. Se on opettanut ymmärtämään fyysisiä rakenteita ja saattamaan projektit maaliin – oli kyseessä koodi tai tiilikatto.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Learning Background</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">
+                        Oppimistyylini on projektilähtöinen. Formaali koulutus (Kiinteistöhoitaja 2025, Myynti 2015) on tukenut kokemusta, mutta osaamiseni on rakennettu ratkomalla aitoja ongelmia.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>Personal Stack</h3>
+                    <ul class="project-list">
+                        <li><strong>Focus:</strong> Itsekritiikki 100 -> Laatu 100.</li>
+                        <li><strong>Dopamine:</strong> Järjestelmän valmistuminen ja datan virtaus.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
         <section id="gym-tab" class="tab-content">
             <div id="gym-action-bar" class="action-bar"></div>
@@ -39,7 +101,7 @@
                 </div>
             </div>
 
-            <section id="gym-section" class="card edit-mode-container" style="display: none;">
+            <section id="gym-section" class="card" style="display: none;">
                 <h2 id="form-title">Kirjaa liike</h2>
                 <form id="gym-form">
                     <input type="hidden" id="entry-id">
@@ -75,6 +137,9 @@
             </div>
             <div id="logs-container"></div>
         </section>
+        
+        <section id="vibe-tab" class="tab-content"><div class="card"><h3>Vibe Tracker</h3></div></section>
+        <section id="data-tab" class="tab-content"><div class="card"><h3>Analytics</h3></div></section>
     </main>
     <script type="module" src="app.js"></script>
 </body>
