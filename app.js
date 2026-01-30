@@ -32,7 +32,7 @@ const cancelEditBtn = document.getElementById('cancel-edit-btn');
 const sortSelect = document.getElementById('sort-order');
 
 let currentWorkoutId = null;
-let editingWorkoutId = null; // Tärkeä: pidetään muokattavan kohteen alkuperäinen treeni-ID tallessa
+let editingWorkoutId = null;
 let unsubscribeLogs = null;
 
 const startBtn = document.createElement('button');
@@ -73,7 +73,6 @@ const closeWorkoutSession = () => {
 
 finalSaveBtn.onclick = async () => {
     if(currentWorkoutId) {
-        // Tarkistetaan onko treenissä oikeasti liikkeitä
         const q = query(collection(db, "gymEntries"), where("workoutId", "==", currentWorkoutId));
         const snap = await getDocs(q);
         if (snap.empty && !confirm("Treeni on tyhjä. Tallennetaanko silti?")) return;
@@ -88,9 +87,8 @@ finalSaveBtn.onclick = async () => {
 };
 
 discardWorkoutBtn.onclick = async () => {
-    if(currentWorkoutId && confirm("Poistetaanko tämä treenisessio kokonaan?")) {
+    if(currentWorkoutId && confirm("Poistetaanko tämä tyhjä sessio?")) {
         await deleteDoc(doc(db, "workouts", currentWorkoutId));
-        // Huom: orpojen liikkeiden siivous voisi olla tässä, mutta oletetaan että käyttäjä poistaa vain tyhjän.
         closeWorkoutSession();
     }
 };
@@ -104,10 +102,8 @@ gymForm.onsubmit = async (e) => {
     const reps = parseInt(document.getElementById('reps').value);
     const weightsStr = document.getElementById('weights').value;
 
-    // Puhdistetaan syöte (trimmaus ja pilkun muunnos pisteeksi)
     const wArray = weightsStr.split(';').map(w => parseFloat(w.replace(',', '.').trim())).filter(w => !isNaN(w));
-    
-    if (wArray.length === 0) { alert("Syötä painot oikein (esim. 80; 82.5)"); return; }
+    if (wArray.length === 0) { alert("Syötä painot oikein!"); return; }
 
     let vol = wArray.length === 1 ? sets * reps * wArray[0] : reps * wArray.reduce((a, b) => a + b, 0);
 
@@ -121,11 +117,7 @@ gymForm.onsubmit = async (e) => {
     if (id) {
         await updateDoc(doc(db, "gymEntries", id), data);
     } else {
-        await addDoc(collection(db, "gymEntries"), { 
-            ...data, 
-            workoutId: currentWorkoutId, 
-            createdAt: serverTimestamp() 
-        });
+        await addDoc(collection(db, "gymEntries"), { ...data, workoutId: currentWorkoutId, createdAt: serverTimestamp() });
     }
     resetForm();
 };
@@ -136,13 +128,12 @@ function resetForm() {
     document.getElementById('form-title').textContent = 'Kirjaa liike';
     document.getElementById('submit-btn').textContent = 'Lisää liike';
     cancelEditBtn.style.display = 'none';
-    gymSection.classList.remove('edit-active');
     editingWorkoutId = null;
 }
 
 cancelEditBtn.onclick = () => resetForm();
 
-// --- HISTORIA ---
+// --- HISTORIAN LATAUS ---
 function loadLogs(order = 'desc') {
     if (unsubscribeLogs) unsubscribeLogs();
     const q = query(collection(db, "gymEntries"), orderBy("createdAt", order));
@@ -205,19 +196,16 @@ window.editEntry = async (id) => {
         document.getElementById('failure').checked = d.failure;
         document.getElementById('entry-id').value = id;
         
-        editingWorkoutId = d.workoutId; // Lukitaan alkuperäinen ID
-        
         gymSection.style.display = 'block';
-        gymSection.classList.add('edit-active');
         document.getElementById('form-title').textContent = 'MUOKATAAN LIIKETTA';
         document.getElementById('submit-btn').textContent = 'Tallenna muutokset';
-        cancelEditBtn.style.display = 'block';
+        cancelEditBtn.style.display = 'inline-block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 };
 
 window.deleteEntry = async (id) => {
-    if(confirm("Poistetaanko tämä liike historiasta?")) await deleteDoc(doc(db, "gymEntries", id));
+    if(confirm("Poistetaanko liike?")) await deleteDoc(doc(db, "gymEntries", id));
 };
 
 sortSelect.onchange = (e) => loadLogs(e.target.value);
