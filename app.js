@@ -3,7 +3,7 @@ import {
     collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, setDoc, updateDoc, getDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 1. NAVIGAATIO ---
+// --- NAVIGAATIO ---
 const navBtns = document.querySelectorAll('.nav-btn');
 const tabs = document.querySelectorAll('.tab-content');
 
@@ -19,7 +19,7 @@ navBtns.forEach(btn => {
     });
 });
 
-// --- 2. SALI-LOGIIKKA ---
+// --- SALI-LOGIIKKA ---
 const gymForm = document.getElementById('gym-form');
 const logsContainer = document.getElementById('logs-container');
 const gymSection = document.getElementById('gym-section');
@@ -44,22 +44,22 @@ finishBtn.style.display = 'none';
 actionDiv.appendChild(startBtn);
 actionDiv.appendChild(finishBtn);
 
-startBtn.addEventListener('click', async () => {
+startBtn.onclick = async () => {
     const workoutRef = doc(collection(db, "workouts"));
     currentWorkoutId = workoutRef.id;
-    await setDoc(workoutRef, { startedAt: serverTimestamp(), status: 'ongoing', totalVolume: 0 });
+    await setDoc(workoutRef, { startedAt: serverTimestamp(), status: 'ongoing' });
     gymSection.style.display = 'block';
     finishBtn.style.display = 'block';
     startBtn.style.display = 'none';
-});
+};
 
-finishBtn.addEventListener('click', () => {
+finishBtn.onclick = () => {
     summaryCard.style.display = 'block';
     gymSection.style.display = 'none';
     finishBtn.style.display = 'none';
-});
+};
 
-finalSaveBtn.addEventListener('click', async () => {
+finalSaveBtn.onclick = async () => {
     if(currentWorkoutId) {
         await updateDoc(doc(db, "workouts", currentWorkoutId), {
             status: 'completed',
@@ -72,157 +72,81 @@ finalSaveBtn.addEventListener('click', async () => {
     startBtn.style.display = 'block';
     notesInput.value = '';
     gymForm.reset();
-});
+};
 
-gymForm.addEventListener('submit', async (e) => {
+gymForm.onsubmit = async (e) => {
     e.preventDefault();
     const id = document.getElementById('entry-id').value;
-    const rawName = document.getElementById('exercise').value.trim();
+    const name = document.getElementById('exercise').value.trim();
     const sets = parseInt(document.getElementById('sets').value);
     const reps = parseInt(document.getElementById('reps').value);
     const weightsStr = document.getElementById('weights').value;
 
-    const weightsArray = weightsStr.replace(/,/g, '.').split(';').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
-    let vol = weightsArray.length === 1 ? sets * reps * weightsArray[0] : reps * weightsArray.reduce((a, b) => a + b, 0);
+    const wArray = weightsStr.replace(/,/g, '.').split(';').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
+    let vol = wArray.length === 1 ? sets * reps * wArray[0] : reps * wArray.reduce((a, b) => a + b, 0);
 
     const data = {
-        exercise: rawName.charAt(0).toUpperCase() + rawName.slice(1),
-        sets, reps, weights: weightsStr,
-        volume: vol,
+        exercise: name.charAt(0).toUpperCase() + name.slice(1),
+        sets, reps, weights: weightsStr, volume: vol,
         failure: document.getElementById('failure').checked,
         updatedAt: serverTimestamp()
     };
 
-    try {
-        if (id) {
-            await updateDoc(doc(db, "gymEntries", id), data);
-        } else {
-            await addDoc(collection(db, "gymEntries"), {
-                ...data,
-                workoutId: currentWorkoutId,
-                createdAt: serverTimestamp()
-            });
-        }
-        resetForm();
-    } catch (err) { console.error(err); }
-});
-
-function resetForm() {
+    if (id) {
+        await updateDoc(doc(db, "gymEntries", id), data);
+    } else {
+        await addDoc(collection(db, "gymEntries"), { ...data, workoutId: currentWorkoutId, createdAt: serverTimestamp() });
+    }
     gymForm.reset();
     document.getElementById('entry-id').value = '';
-    document.getElementById('form-title').textContent = 'Kirjaa liike';
-    document.getElementById('submit-btn').textContent = 'Lisää liike';
-}
+};
 
-// --- 3. HISTORIA JA DYNAAMINEN LAJITTELU ---
+// --- HISTORIA ---
 function loadLogs(order = 'desc') {
     if (unsubscribeLogs) unsubscribeLogs();
     const q = query(collection(db, "gymEntries"), orderBy("createdAt", order));
     
     unsubscribeLogs = onSnapshot(q, async (snapshot) => {
-        const workoutGroups = {};
-        
+        const groups = {};
         snapshot.forEach(doc => {
             const d = doc.data();
             const wId = d.workoutId || 'legacy';
-            if (!workoutGroups[wId]) {
-                workoutGroups[wId] = { 
-                    entries: [], 
-                    totalVol: 0, 
-                    date: d.createdAt?.toDate() || new Date(),
-                    notes: '' 
-                };
-            }
-            workoutGroups[wId].entries.push({ id: doc.id, ...d });
-            workoutGroups[wId].totalVol += (d.volume || 0);
+            if (!groups[wId]) groups[wId] = { entries: [], vol: 0, date: d.createdAt?.toDate() || new Date() };
+            groups[wId].entries.push({ id: doc.id, ...d });
+            groups[wId].vol += d.volume;
         });
 
         logsContainer.innerHTML = '';
-        const sortedIds = Object.keys(workoutGroups).sort((a, b) => {
-            return order === 'desc' ? workoutGroups[b].date - workoutGroups[a].date : workoutGroups[a].date - workoutGroups[b].date;
-        });
+        const sortedIds = Object.keys(groups).sort((a,b) => order === 'desc' ? groups[b].date - groups[a].date : groups[a].date - groups[b].date);
 
         for (const wId of sortedIds) {
-            const g = workoutGroups[wId];
-            if (wId !== 'legacy') {
-                const wDoc = await getDoc(doc(db, "workouts", wId));
-                if(wDoc.exists()) g.notes = wDoc.data().notes || '';
-            }
-
+            const g = groups[wId];
             const card = document.createElement('div');
             card.className = 'workout-card';
             if(wId === currentWorkoutId) card.classList.add('active-workout-card');
 
-            const header = document.createElement('div');
-            header.className = 'workout-header';
-            header.innerHTML = `
-                <div class="workout-title">
-                    ${g.date.toLocaleDateString('fi-FI')} <span class="time-stamp">klo ${g.date.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'})}</span>
-                    ${wId === currentWorkoutId ? '<span class="ongoing-badge">ONGOING</span>' : ''}
+            card.innerHTML = `
+                <div class="workout-header">
+                    <div class="workout-title">${g.date.toLocaleDateString('fi-FI')}</div>
+                    <div class="workout-meta">${g.vol} kg</div>
                 </div>
-                <div class="workout-meta">${g.totalVol} kg</div>
+                <div class="workout-body"></div>
             `;
-            card.appendChild(header);
-
-            const body = document.createElement('div');
-            body.className = 'workout-body';
-
+            
+            const body = card.querySelector('.workout-body');
             g.entries.forEach(e => {
                 const row = document.createElement('div');
                 row.className = 'entry-row';
-                const info = document.createElement('div');
-                info.className = 'entry-main';
-                
-                const name = document.createElement('strong'); name.textContent = e.exercise;
-                const det = document.createElement('span'); det.textContent = ` ${e.sets}x${e.reps} @ ${e.weights}kg`;
-                info.appendChild(name); info.appendChild(det);
-
-                if(e.failure) {
-                    const f = document.createElement('span'); f.className = 'fail-badge'; f.textContent = 'FAIL';
-                    info.appendChild(f);
-                }
-                const v = document.createElement('div'); v.className = 'entry-vol'; v.textContent = `${e.volume} kg volyymi`;
-                info.appendChild(v);
-
-                const acts = document.createElement('div');
-                acts.className = 'actions';
-                acts.innerHTML = `<button class="btn-edit">✏️</button><button class="btn-delete">❌</button>`;
-                acts.querySelector('.btn-edit').onclick = () => editEntry(e.id);
-                acts.querySelector('.btn-delete').onclick = () => deleteEntry(e.id);
-
-                row.appendChild(info); row.appendChild(acts);
+                row.innerHTML = `
+                    <div><strong>${e.exercise}</strong> ${e.sets}x${e.reps} @ ${e.weights}</div>
+                    <div class="entry-vol">${e.volume} kg</div>
+                `;
                 body.appendChild(row);
             });
-
-            card.appendChild(body);
-            if(g.notes) {
-                const n = document.createElement('div'); n.className = 'workout-notes-display';
-                n.textContent = `Huom: ${g.notes}`;
-                card.appendChild(n);
-            }
             logsContainer.appendChild(card);
         }
     });
 }
 
-sortSelect.addEventListener('change', (e) => loadLogs(e.target.value));
+sortSelect.onchange = (e) => loadLogs(e.target.value);
 loadLogs('desc');
-
-window.editEntry = async (id) => {
-    const s = await getDoc(doc(db, "gymEntries", id));
-    if(s.exists()) {
-        const d = s.data();
-        document.getElementById('exercise').value = d.exercise;
-        document.getElementById('sets').value = d.sets;
-        document.getElementById('reps').value = d.reps;
-        document.getElementById('weights').value = d.weights;
-        document.getElementById('failure').checked = d.failure;
-        document.getElementById('entry-id').value = id;
-        gymSection.style.display = 'block';
-        document.getElementById('form-title').textContent = 'Muokkaa liikettä';
-        document.getElementById('submit-btn').textContent = 'Päivitä liike';
-        gymSection.scrollIntoView({ behavior: 'smooth' });
-    }
-};
-
-window.deleteEntry = async (id) => { if(confirm("Poistetaanko?")) await deleteDoc(doc(db, "gymEntries", id)); };
