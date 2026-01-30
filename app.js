@@ -1,3 +1,22 @@
+// Välilehtien vaihto-logiikka
+const navLinks = document.querySelectorAll('.nav-link');
+const tabs = document.querySelectorAll('.tab-content');
+
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        const target = link.dataset.target;
+
+        // Vaihda aktiivinen nappi
+        navLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+
+        // Vaihda näkyvä osio
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.id === target) tab.classList.add('active');
+        });
+    });
+});
 import { db } from './firebase.js';
 import { 
     collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc 

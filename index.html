@@ -3,57 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Dashboard | Gym</title>
+    <title>Minun Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
+
+    <nav class="main-nav">
+        <button class="nav-link active" data-target="cv-section">👤 CV & Info</button>
+        <button class="nav-link" data-target="gym-module">🏋️ Sali-logi</button>
+        <button class="nav-link" data-target="links-section">🔗 Linkit</button>
+    </nav>
+
     <main class="container">
-        <header>
-            <h1>Gym Log</h1>
-            <p class="subtitle">Human Dashboard v1.1</p>
-        </header>
-
-        <section id="gym-section" class="card">
-            <h2>Kirjaa liike</h2>
-            <form id="gym-form">
-                <div class="form-group">
-                    <label for="exercise">Liikkeen nimi</label>
-                    <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Kyykky" required autocomplete="off">
-                    <datalist id="exercise-helpers"></datalist>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="sets">Sarjat</label>
-                        <input type="number" id="sets" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="reps">Toistot</label>
-                        <input type="number" id="reps" min="1" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="weights">Painot (kg)</label>
-                    <input type="text" id="weights" placeholder="Esim. 100 tai 100, 105, 110" required>
-                    <small>Käytä pilkkua, jos paino muuttuu sarjojen välillä.</small>
-                </div>
-
-                <div class="form-group checkbox-group">
-                    <input type="checkbox" id="failure">
-                    <label for="failure">Sarja tehty failureen?</label>
-                </div>
-
-                <button type="submit" class="btn-add">Lisää liike treeniin</button>
-            </form>
+        
+        <section id="cv-section" class="tab-content active">
+            <header>
+                <h1>Etunimi Sukunimi</h1>
+                <p class="subtitle">Full-stack Kehittäjä & Harrastaja</p>
+            </header>
+            <div class="card">
+                <h3>Esittely</h3>
+                <p>Tähän voit kirjoittaa CV-tekstisi, taitosi ja projektisi.</p>
+            </div>
         </section>
 
-        <section class="history-section">
-            <h2 id="history-title">Treenihistoria</h2>
-            <div id="logs-container">
-                </div>
+        <section id="gym-module" class="tab-content">
+            <header>
+                <h1>Gym Log</h1>
+                <p class="subtitle">Oma treenidatan hallinta</p>
+            </header>
+            
+            <section id="gym-form-container" class="card" style="display: none;">
+                </form>
+            </section>
+
+            <div id="logs-container"></div>
         </section>
+
     </main>
 
     <script type="module" src="app.js"></script>
