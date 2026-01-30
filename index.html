@@ -38,14 +38,14 @@
             <div class="cv-grid">
                 <div class="card">
                     <h3>Profiili</h3>
-                    <p>Rakennan työkaluja, jotka parantavat suorituskykyä. Tämä Dashboard yhdistää koodauksen ja elämänhallinnan.</p>
+                    <p>Kehitän työkaluja, jotka muuttavat datan suorituskyvyksi. Tämä Dashboard on Personal OS -projektini perusta.</p>
                 </div>
                 <div class="card">
                     <h3>Projektit</h3>
                     <ul class="project-list">
-                        <li><strong>Gym Engine</strong> – Volyymianalytiikka</li>
-                        <li><strong>Notebook Calendar</strong> – Ajanhallinta</li>
-                        <li><strong>Task Matrix</strong> – Priorisointi</li>
+                        <li><strong>Gym Engine v2</strong> – Hierarkkinen datamalli</li>
+                        <li><strong>Notebook Cal</strong> – Rakenteellinen kalenteri</li>
+                        <li><strong>Shared Tasks</strong> – Reaaliaikainen yhteistyö</li>
                     </ul>
                 </div>
             </div>
@@ -57,8 +57,8 @@
             <div id="workout-summary-card" class="card" style="display: none; border-top: 4px solid var(--success);">
                 <h3>Päätä treeni</h3>
                 <div class="form-group">
-                    <label>Treenin muistiinpanot (fiilis, kesto, huomiot)</label>
-                    <input type="text" id="workout-notes" placeholder="Esim. Kulki hyvin, 60min...">
+                    <label>Treenin muistiinpanot</label>
+                    <input type="text" id="workout-notes" placeholder="Miten kulki? Fiilis, kesto...">
                 </div>
                 <button id="final-save-btn" class="btn-success">TALLENNA JA ARKISTOI</button>
             </div>
@@ -69,7 +69,7 @@
                     <input type="hidden" id="entry-id">
                     <div class="form-group">
                         <label>Liike</label>
-                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Kyykky" required autocomplete="off">
+                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Penkkipunnerrus" required autocomplete="off">
                         <datalist id="exercise-helpers"></datalist>
                     </div>
                     <div class="form-row">
@@ -77,8 +77,8 @@
                         <div class="form-group"><label>Toistot</label><input type="number" id="reps" required></div>
                     </div>
                     <div class="form-group">
-                        <label>Painot (kg) - <small>Käytä puolipistettä ; erottimena</small></label>
-                        <input type="text" id="weights" placeholder="Esim. 72,5; 75; 80" required>
+                        <label>Painot (kg) - <small>Erottele sarjat puolipisteellä ;</small></label>
+                        <input type="text" id="weights" placeholder="Esim. 80; 82,5; 85" required>
                     </div>
                     <label class="checkbox-group">
                         <input type="checkbox" id="failure"> <span>Failureen asti?</span>
@@ -87,14 +87,21 @@
                 </form>
             </section>
 
+            <div class="logs-header">
+                <h3>Treenihistoria</h3>
+                <select id="sort-order" class="sort-select">
+                    <option value="desc">Uusin ensin</option>
+                    <option value="asc">Vanhin ensin</option>
+                </select>
+            </div>
             <div id="logs-container"></div>
         </section>
 
         <section id="vibe-tab" class="tab-content">
-            <div class="card"><h3>Vibe Tracker</h3><p>Tulossa: Päivittäinen fiilis ja vitamiinit.</p></div>
+            <div class="card"><h3>Vibe Tracker</h3><p>Tulossa: Mieliala, uni ja ravinteet.</p></div>
         </section>
         <section id="data-tab" class="tab-content">
-            <div class="card"><h3>Analytics</h3><p>Tulossa: Garmin-integraatio ja volyymikäyrät.</p></div>
+            <div class="card"><h3>Deep Analytics</h3><p>Tulossa: Volyymitrendit ja PR-seuranta.</p></div>
         </section>
 
     </main>

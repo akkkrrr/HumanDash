@@ -27,9 +27,10 @@ const actionDiv = document.getElementById('gym-action-bar');
 const summaryCard = document.getElementById('workout-summary-card');
 const notesInput = document.getElementById('workout-notes');
 const finalSaveBtn = document.getElementById('final-save-btn');
-const datalist = document.getElementById('exercise-helpers');
+const sortSelect = document.getElementById('sort-order');
 
 let currentWorkoutId = null;
+let unsubscribeLogs = null;
 
 const startBtn = document.createElement('button');
 startBtn.textContent = '➕ ALOITA UUSI TREENI';
@@ -43,7 +44,7 @@ finishBtn.style.display = 'none';
 actionDiv.appendChild(startBtn);
 actionDiv.appendChild(finishBtn);
 
-// Aloita treeni
+// Treenin aloitus
 startBtn.addEventListener('click', async () => {
     const workoutRef = doc(collection(db, "workouts"));
     currentWorkoutId = workoutRef.id;
@@ -53,7 +54,7 @@ startBtn.addEventListener('click', async () => {
     startBtn.style.display = 'none';
 });
 
-// Lopeta treeni - Avaa muistiinpanot
+// Treenin lopetuslomake auki
 finishBtn.addEventListener('click', () => {
     summaryCard.style.display = 'block';
     gymSection.style.display = 'none';
@@ -61,7 +62,7 @@ finishBtn.addEventListener('click', () => {
     summaryCard.scrollIntoView({ behavior: 'smooth' });
 });
 
-// Tallenna muistiinpanot ja sulje workout
+// Lopullinen tallennus
 finalSaveBtn.addEventListener('click', async () => {
     if(currentWorkoutId) {
         await updateDoc(doc(db, "workouts", currentWorkoutId), {
@@ -77,25 +78,17 @@ finalSaveBtn.addEventListener('click', async () => {
     gymForm.reset();
 });
 
-// Liikkeen tallennus (Sisältää puolipiste-logiikan)
+// Liikkeen tallennus/päivitys
 gymForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
     const id = document.getElementById('entry-id').value;
     const rawName = document.getElementById('exercise').value.trim();
     const sets = parseInt(document.getElementById('sets').value);
     const reps = parseInt(document.getElementById('reps').value);
     const weightsStr = document.getElementById('weights').value;
 
-    // Puolipiste-logiikka & pilkku desimaaliksi
     const weightsArray = weightsStr.replace(/,/g, '.').split(';').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
-    
-    let vol = 0;
-    if (weightsArray.length === 1) {
-        vol = sets * reps * weightsArray[0];
-    } else {
-        vol = reps * weightsArray.reduce((a, b) => a + b, 0);
-    }
+    let vol = weightsArray.length === 1 ? sets * reps * weightsArray[0] : reps * weightsArray.reduce((a, b) => a + b, 0);
 
     const data = {
         exercise: rawName.charAt(0).toUpperCase() + rawName.slice(1),
@@ -127,112 +120,103 @@ function resetForm() {
     document.getElementById('submit-btn').textContent = 'Lisää liike';
 }
 
-// --- 3. RENDEROINTI (XSS-suojattu) ---
-onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), async (snapshot) => {
-    // Haetaan samalla workout-dokumentit muistiinpanoja varten
-    const workoutGroups = {};
+// --- 3. HISTORIA JA LAJITTELU ---
+
+function loadLogs(order = 'desc') {
+    if (unsubscribeLogs) unsubscribeLogs();
+
+    const q = query(collection(db, "gymEntries"), orderBy("createdAt", order));
     
-    snapshot.forEach(doc => {
-        const d = doc.data();
-        const wId = d.workoutId || 'legacy';
-        if (!workoutGroups[wId]) {
-            workoutGroups[wId] = { 
-                entries: [], 
-                totalVol: 0, 
-                date: d.createdAt?.toDate(),
-                notes: '' 
-            };
-        }
-        workoutGroups[wId].entries.push({ id: doc.id, ...d });
-        workoutGroups[wId].totalVol += (d.volume || 0);
-    });
-
-    logsContainer.innerHTML = '';
-
-    for (const wId of Object.keys(workoutGroups)) {
-        const group = workoutGroups[wId];
+    unsubscribeLogs = onSnapshot(q, async (snapshot) => {
+        const workoutGroups = {};
         
-        // Haetaan muistiinpanot kerran per workout
-        if (wId !== 'legacy') {
-            const wDoc = await getDoc(doc(db, "workouts", wId));
-            if(wDoc.exists()) group.notes = wDoc.data().notes || '';
-        }
-
-        const card = document.createElement('div');
-        card.className = 'workout-card';
-        if(wId === currentWorkoutId) card.classList.add('active-workout-card');
-
-        // Header
-        const header = document.createElement('div');
-        header.className = 'workout-header';
-        header.innerHTML = `
-            <div class="workout-title">
-                ${group.date ? group.date.toLocaleDateString('fi-FI') : 'Hetki sitten'}
-                ${wId === currentWorkoutId ? '<span class="ongoing-badge">ONGOING</span>' : ''}
-            </div>
-            <div class="workout-meta">${group.totalVol} kg</div>
-        `;
-        card.appendChild(header);
-
-        // Body
-        const body = document.createElement('div');
-        body.className = 'workout-body';
-
-        group.entries.forEach(e => {
-            const row = document.createElement('div');
-            row.className = 'entry-row';
-            
-            const info = document.createElement('div');
-            info.className = 'entry-main';
-            
-            const name = document.createElement('strong');
-            name.textContent = e.exercise;
-            
-            const details = document.createElement('span');
-            details.textContent = ` ${e.sets}x${e.reps} @ ${e.weights}kg`;
-            
-            info.appendChild(name);
-            info.appendChild(details);
-
-            if(e.failure) {
-                const badge = document.createElement('span');
-                badge.className = 'fail-badge';
-                badge.textContent = 'FAIL';
-                info.appendChild(badge);
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            const wId = d.workoutId || 'legacy';
+            if (!workoutGroups[wId]) {
+                const dateObj = d.createdAt?.toDate() || new Date();
+                workoutGroups[wId] = { entries: [], totalVol: 0, date: dateObj, notes: '' };
             }
-
-            const volDiv = document.createElement('div');
-            volDiv.className = 'entry-vol';
-            volDiv.textContent = `${e.volume} kg volyymi`;
-            info.appendChild(volDiv);
-
-            const actions = document.createElement('div');
-            actions.className = 'actions';
-            actions.innerHTML = `<button class="btn-edit">✏️</button><button class="btn-delete">❌</button>`;
-            
-            actions.querySelector('.btn-edit').onclick = () => editEntry(e.id);
-            actions.querySelector('.btn-delete').onclick = () => deleteEntry(e.id);
-
-            row.appendChild(info);
-            row.appendChild(actions);
-            body.appendChild(row);
+            workoutGroups[wId].entries.push({ id: doc.id, ...d });
+            workoutGroups[wId].totalVol += (d.volume || 0);
         });
 
-        card.appendChild(body);
-        
-        // Muistiinpanot
-        if (group.notes) {
-            const notesDiv = document.createElement('div');
-            notesDiv.className = 'workout-notes-display';
-            notesDiv.textContent = `Note: ${group.notes}`;
-            card.appendChild(notesDiv);
+        logsContainer.innerHTML = '';
+
+        // Lajitellaan kortit (workoutGroups) aikaleiman mukaan
+        const sortedIds = Object.keys(workoutGroups).sort((a, b) => {
+            return order === 'desc' ? workoutGroups[b].date - workoutGroups[a].date : workoutGroups[a].date - workoutGroups[b].date;
+        });
+
+        for (const wId of sortedIds) {
+            const g = workoutGroups[wId];
+            
+            if (wId !== 'legacy') {
+                const wDoc = await getDoc(doc(db, "workouts", wId));
+                if(wDoc.exists()) g.notes = wDoc.data().notes || '';
+            }
+
+            const card = document.createElement('div');
+            card.className = 'workout-card';
+            if(wId === currentWorkoutId) card.classList.add('active-workout-card');
+
+            const header = document.createElement('div');
+            header.className = 'workout-header';
+            header.innerHTML = `
+                <div class="workout-title">
+                    ${g.date.toLocaleDateString('fi-FI')} <span class="time-stamp">klo ${g.date.toLocaleTimeString('fi-FI', {hour:'2-digit', minute:'2-digit'})}</span>
+                    ${wId === currentWorkoutId ? '<span class="ongoing-badge">ONGOING</span>' : ''}
+                </div>
+                <div class="workout-meta">${g.totalVol} kg</div>
+            `;
+            card.appendChild(header);
+
+            const body = document.createElement('div');
+            body.className = 'workout-body';
+
+            g.entries.forEach(e => {
+                const row = document.createElement('div');
+                row.className = 'entry-row';
+                
+                const info = document.createElement('div');
+                info.className = 'entry-main';
+                const name = document.createElement('strong'); name.textContent = e.exercise;
+                const det = document.createElement('span'); det.textContent = ` ${e.sets}x${e.reps} @ ${e.weights}kg`;
+                info.appendChild(name); info.appendChild(det);
+
+                if(e.failure) {
+                    const f = document.createElement('span'); f.className = 'fail-badge'; f.textContent = 'FAIL';
+                    info.appendChild(f);
+                }
+
+                const v = document.createElement('div'); v.className = 'entry-vol'; v.textContent = `${e.volume} kg volyymi`;
+                info.appendChild(v);
+
+                const acts = document.createElement('div');
+                acts.className = 'actions';
+                acts.innerHTML = `<button class="btn-edit">✏️</button><button class="btn-delete">❌</button>`;
+                acts.querySelector('.btn-edit').onclick = () => editEntry(e.id);
+                acts.querySelector('.btn-delete').onclick = () => deleteEntry(e.id);
+
+                row.appendChild(info); row.appendChild(acts);
+                body.appendChild(row);
+            });
+
+            card.appendChild(body);
+            if(g.notes) {
+                const n = document.createElement('div'); n.className = 'workout-notes-display';
+                n.textContent = `Huom: ${g.notes}`;
+                card.appendChild(n);
+            }
+            logsContainer.appendChild(card);
         }
+    });
+}
 
-        logsContainer.appendChild(card);
-    }
-});
+sortSelect.addEventListener('change', (e) => loadLogs(e.target.value));
+loadLogs('desc'); // Aloitus oletuksena uusin ensin
 
-// Globaalit
+// GLOBAALIT
 window.editEntry = async (id) => {
     const s = await getDoc(doc(db, "gymEntries", id));
     if(s.exists()) {

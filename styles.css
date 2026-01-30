@@ -50,13 +50,7 @@ body {
 h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
 h3 { text-transform: uppercase; font-size: 0.7rem; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 15px; }
 
-.cv-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-@media (min-width: 500px) { .cv-grid { grid-template-columns: 1fr 1fr; } }
-
-.tech-stack { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
-.tag { background: #0f172a; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; color: var(--primary); border: 1px solid var(--border); font-weight: 700; }
-
-/* GYM UI ELEMENTS */
+/* GYM UI */
 .action-bar { margin-bottom: 20px; }
 .btn-primary { background: var(--primary); color: #0f172a; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
 .btn-success { background: var(--success); color: white; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
@@ -68,17 +62,22 @@ label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; margin-bo
 input { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: white; width: 100%; font-size: 1rem; }
 .checkbox-group { display: flex; align-items: center; gap: 10px; margin: 10px 0; cursor: pointer; font-size: 0.9rem; }
 
-/* WORKOUT HISTORY CARDS */
+/* LAJITTELU */
+.logs-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
+.sort-select { background: #0f172a; color: var(--primary); border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+
+/* TREENIKORTIT */
 .tab-content { display: none; }
 .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-.workout-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; transition: 0.3s; }
+.workout-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
 .active-workout-card { border-left: 4px solid var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
 
 .workout-header { background: rgba(51, 65, 85, 0.4); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
 .workout-title { font-size: 0.75rem; font-weight: 800; color: var(--primary); }
 .workout-meta { font-size: 0.75rem; font-weight: 800; color: var(--success); }
+.time-stamp { font-size: 0.65rem; color: var(--text-muted); font-weight: 400; margin-left: 5px; }
 .ongoing-badge { background: var(--primary); color: #0f172a; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; margin-left: 8px; font-weight: 900; }
 
 .workout-body { padding: 5px 15px; }
