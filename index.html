@@ -1,96 +1,31 @@
-<!DOCTYPE html>
-<html lang="fi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Dashboard</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-</head>
-<body>
-
-    <nav class="top-nav">
-        <div class="nav-container">
-            <span class="brand">HUMAN<strong>DASH</strong></span>
-            <div class="nav-links">
-                <button class="nav-btn active" data-target="cv-tab">👤 CV</button>
-                <button class="nav-btn" data-target="gym-tab">🏋️ GYM</button>
-                <button class="nav-btn" data-target="vibe-tab">✨ VIBE</button>
-                <button class="nav-btn" data-target="data-tab">📊 DATA</button>
-            </div>
+<section id="cv-tab" class="tab-content active">
+    <div class="hero-card card">
+        <h1>Etunimi Sukunimi</h1>
+        <p class="subtitle">Full-stack Developer | Problem Solver</p>
+        <div class="tech-stack">
+            <span class="tag">JavaScript (ES6+)</span>
+            <span class="tag">Firebase</span>
+            <span class="tag">Vercel</span>
+            <span class="tag">Responsive Design</span>
         </div>
-    </nav>
+    </div>
 
-    <main class="container">
+    <div class="cv-grid">
+        <div class="card">
+            <h3>Tietoa minusta</h3>
+            <p style="font-size: 0.95rem; color: var(--text-muted);">
+                Rakennan työkaluja, jotka parantavat jokapäiväistä suorituskykyä. 
+                Tämä Dashboard on osoitus intohimostani yhdistää data ja käyttöliittymät.
+            </p>
+        </div>
         
-        <section id="cv-tab" class="tab-content active">
-            <div class="hero-card card">
-                <h1>Etunimi Sukunimi</h1>
-                <p>Full-stack Kehittäjä & Biohakkeri</p>
-                <div class="tech-stack">
-                    <span class="tag">JavaScript</span>
-                    <span class="tag">Firebase</span>
-                    <span class="tag">Vercel</span>
-                    <span class="tag">GitHub</span>
-                </div>
-            </div>
-            <div class="card">
-                <h3>Tervetuloa</h3>
-                <p>Tämä on henkilökohtainen hallintapaneelini, johon yhdistyvät ammatillinen osaaminen ja elämänhallinnan työkalut.</p>
-            </div>
-        </section>
-
-        <section id="gym-tab" class="tab-content">
-            <div id="gym-action-bar" class="action-bar"></div>
-            
-            <section id="gym-section" class="card" style="display: none;">
-                <h2>Kirjaa liike</h2>
-                <form id="gym-form">
-                    <div class="form-group">
-                        <label for="exercise">Liike</label>
-                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Kyykky" required autocomplete="off">
-                        <datalist id="exercise-helpers"></datalist>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Sarjat</label>
-                            <input type="number" id="sets" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Toistot</label>
-                            <input type="number" id="reps" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Painot (kg)</label>
-                        <input type="text" id="weights" placeholder="Esim. 100 tai 100, 105" required>
-                    </div>
-                    <label class="checkbox-group">
-                        <input type="checkbox" id="failure"> Sarja tehty failureen?
-                    </label>
-                    <button type="submit" class="btn-add">Lisää liike treeniin</button>
-                </form>
-            </section>
-
-            <div id="logs-container"></div>
-        </section>
-
-        <section id="vibe-tab" class="tab-content">
-            <div class="card">
-                <h2>Vibe Tracker</h2>
-                <p>Tulossa: Vitamiiniseuranta ja päivittäinen fiilis-logi.</p>
-            </div>
-        </section>
-
-        <section id="data-tab" class="tab-content">
-            <div class="card">
-                <h2>Health Analytics</h2>
-                <p>Tulossa: Garmin API -integraatio ja painokäyrät.</p>
-            </div>
-        </section>
-
-    </main>
-
-    <script type="module" src="app.js"></script>
-</body>
-</html>
+        <div class="card">
+            <h3>Projektit</h3>
+            <ul class="project-list">
+                <li><strong>Gym Log</strong> – Reaaliaikainen treenipäiväkirja</li>
+                <li><strong>Vibe Checker</strong> – Hyvinvoinnin seuranta</li>
+                <li><strong>Task Matrix</strong> – Priorisoitu tehtävälista</li>
+            </ul>
+        </div>
+    </div>
+</section>
