@@ -1,302 +1,120 @@
-/* HUMAN DASHBOARD - MASTER STYLESHEET
-   Professional Dark Mode UI 
-*/
-
 :root {
     --bg: #0b1120;
     --card: rgba(30, 41, 59, 0.7);
     --primary: #38bdf8;
-    --primary-glow: rgba(56, 189, 248, 0.15);
     --success: #10b981;
     --danger: #ef4444;
     --text: #f1f5f9;
     --text-muted: #94a3b8;
     --border: rgba(255, 255, 255, 0.08);
     --radius: 16px;
-    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Perusasetukset */
-* { 
-    box-sizing: border-box; 
-    margin: 0; 
-    padding: 0; 
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     background-color: var(--bg);
-    background-image: 
-        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.05) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, rgba(129, 140, 248, 0.05) 0px, transparent 50%);
+    background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.05) 0px, transparent 50%);
     color: var(--text);
-    font-family: var(--font-main);
+    font-family: 'Inter', sans-serif;
     line-height: 1.6;
-    min-height: 100vh;
 }
 
-.container { 
-    max-width: 600px; 
-    margin: 0 auto; 
-    padding: 0 20px 60px; 
-}
+.container { max-width: 600px; margin: 0 auto; padding: 0 20px 60px; }
 
 /* --- NAVIGAATIO --- */
 .top-nav {
     background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     z-index: 1000;
-    padding: 14px 0;
-    margin-bottom: 40px;
+    padding: 12px 0;
+    margin-bottom: 30px;
 }
 
 .nav-container {
-    max-width: 600px;
-    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 600px;
+    margin: 0 auto;
     padding: 0 20px;
 }
 
-.brand { 
-    font-size: 0.75rem; 
-    font-weight: 800;
-    letter-spacing: 2px; 
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
+.brand { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1px; }
 .brand strong { color: var(--primary); }
 
-.nav-links { display: flex; gap: 8px; }
-
+.nav-links { display: flex; gap: 5px; }
 .nav-btn {
     background: transparent;
     color: var(--text-muted);
     border: none;
     padding: 8px 12px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s ease;
 }
+.nav-btn.active { color: var(--primary); background: rgba(56, 189, 248, 0.1); }
 
-.nav-btn.active { 
-    color: var(--primary); 
-    background: var(--primary-glow);
-}
-
-/* --- KORTIT JA ASIAKIRJAT --- */
+/* --- KORTIT --- */
 .card { 
     background: var(--card); 
     padding: 24px; 
     border-radius: var(--radius); 
     border: 1px solid var(--border); 
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     backdrop-filter: blur(10px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
 .hero-card {
-    background: linear-gradient(145deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
     border-left: 4px solid var(--primary);
-    padding: 40px 24px;
 }
 
-/* Typografia */
 h1 {
     font-size: 2.2rem;
     font-weight: 800;
-    letter-spacing: -1px;
     background: linear-gradient(to right, #38bdf8, #818cf8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
 }
 
-h2 { font-size: 1.25rem; margin-bottom: 20px; font-weight: 700; }
+h3 { text-transform: uppercase; font-size: 0.75rem; color: var(--primary); letter-spacing: 1px; margin-bottom: 15px; }
 
-h3 {
-    text-transform: uppercase;
-    font-size: 0.75rem;
-    letter-spacing: 1.5px;
-    color: var(--primary);
-    margin-bottom: 16px;
-    font-weight: 700;
-}
+.cv-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+@media (min-width: 500px) { .cv-grid { grid-template-columns: 1fr 1fr; } }
 
-.subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
+.tech-stack { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
+.tag { background: #0f172a; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; color: var(--primary); border: 1px solid var(--border); font-weight: 700; }
 
-/* --- CV GRID & TAGS --- */
-.cv-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-}
+/* --- GYM LOG UI --- */
+.action-bar { margin-bottom: 20px; }
+.btn-primary { background: var(--primary); color: #0f172a; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
+.btn-success { background: var(--success); color: white; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
+.btn-add { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 12px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
 
-@media (min-width: 500px) {
-    .cv-grid { grid-template-columns: 1fr 1fr; }
-}
+.form-group { margin-bottom: 15px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 5px; display: block; }
+input { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: white; width: 100%; font-size: 1rem; }
 
-.tech-stack { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.checkbox-group { display: flex; align-items: center; gap: 10px; margin: 10px 0; cursor: pointer; font-size: 0.9rem; }
 
-.tag { 
-    background: rgba(15, 23, 42, 0.5); 
-    padding: 6px 12px; 
-    border-radius: 20px; 
-    font-size: 0.7rem; 
-    font-weight: 700; 
-    color: var(--primary); 
-    border: 1px solid var(--border); 
-}
+/* --- TREENIKORTIT --- */
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-.project-list { list-style: none; font-size: 0.9rem; }
-.project-list li {
-    margin-bottom: 12px;
-    padding-left: 12px;
-    border-left: 2px solid var(--border);
-}
-
-/* --- LOMAKKEET (GYM) --- */
-.form-group { margin-bottom: 20px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-label { 
-    font-size: 0.75rem; 
-    font-weight: 700; 
-    margin-bottom: 8px; 
-    display: block;
-    color: var(--text-muted); 
-    text-transform: uppercase;
-}
-
-input { 
-    background: rgba(15, 23, 42, 0.6); 
-    border: 1px solid var(--border); 
-    border-radius: 12px; 
-    padding: 14px; 
-    color: white; 
-    font-size: 1rem; 
-    width: 100%;
-    transition: border-color 0.2s;
-}
-
-input:focus {
-    outline: none;
-    border-color: var(--primary);
-}
-
-.checkbox-group { 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    font-size: 0.9rem; 
-    cursor: pointer;
-    margin: 15px 0;
-}
-
-/* --- NAPIT --- */
-button { 
-    font-family: var(--font-main);
-    cursor: pointer; 
-    transition: all 0.2s ease;
-}
-
-.btn-primary { 
-    background: var(--primary); 
-    color: #0f172a; 
-    padding: 16px; 
-    width: 100%; 
-    border: none; 
-    border-radius: 12px; 
-    font-weight: 800; 
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.btn-success { 
-    background: var(--success); 
-    color: white; 
-    padding: 16px; 
-    width: 100%; 
-    border: none; 
-    border-radius: 12px; 
-    font-weight: 800; 
-}
-
-.btn-add { 
-    background: transparent; 
-    border: 2px solid var(--primary); 
-    color: var(--primary); 
-    padding: 14px; 
-    width: 100%; 
-    border-radius: 12px; 
-    font-weight: 700; 
-}
-
-.btn-primary:hover, .btn-success:hover { transform: translateY(-2px); opacity: 0.9; }
-
-/* --- TREENIKORTIT HISTORIASSA --- */
-.tab-content { display: none; animation: fadeIn 0.3s ease; }
-.tab-content.active { display: block; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.workout-card { 
-    background: var(--card); 
-    border-radius: var(--radius); 
-    border: 1px solid var(--border); 
-    margin-bottom: 20px; 
-    overflow: hidden; 
-}
-
-.workout-header { 
-    background: rgba(51, 65, 85, 0.5); 
-    padding: 12px 20px; 
-    font-size: 0.75rem; 
-    font-weight: 800; 
-    color: var(--primary); 
-    border-bottom: 1px solid var(--border);
-}
-
-.workout-body { padding: 10px 20px; }
-
-.entry-row { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    padding: 14px 0; 
-    border-bottom: 1px solid var(--border); 
-}
-
+.workout-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
+.workout-header { background: rgba(51, 65, 85, 0.4); padding: 10px 15px; font-size: 0.7rem; font-weight: 800; color: var(--primary); }
+.workout-body { padding: 5px 15px; }
+.entry-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
 .entry-row:last-child { border-bottom: none; }
-
 .entry-main { font-size: 0.95rem; }
-.entry-main strong { color: white; text-transform: capitalize; }
-
-.fail-badge { 
-    color: var(--danger); 
-    font-size: 0.65rem; 
-    font-weight: 900; 
-    margin-left: 8px; 
-    border: 1px solid var(--danger); 
-    padding: 2px 6px; 
-    border-radius: 6px; 
-}
-
-.btn-delete { 
-    background: transparent; 
-    border: none; 
-    font-size: 1.1rem; 
-    opacity: 0.3; 
-}
-
-.btn-delete:hover { opacity: 1; filter: grayscale(0); }
+.fail-badge { color: var(--danger); font-size: 0.6rem; font-weight: 900; border: 1px solid var(--danger); padding: 1px 4px; border-radius: 4px; margin-left: 5px; }
+.btn-delete { background: transparent; border: none; cursor: pointer; opacity: 0.4; transition: 0.2s; }
+.btn-delete:hover { opacity: 1; }

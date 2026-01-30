@@ -3,7 +3,7 @@ import {
     collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 1. NAVIGOINTI ---
+// --- 1. VÄLILEHDET ---
 const navBtns = document.querySelectorAll('.nav-btn');
 const tabs = document.querySelectorAll('.tab-content');
 
@@ -19,19 +19,20 @@ navBtns.forEach(btn => {
     });
 });
 
-// --- 2. GYM-LOG LOGIIKKA ---
+// --- 2. SALI-LOGIIKKA ---
 const gymForm = document.getElementById('gym-form');
 const logsContainer = document.getElementById('logs-container');
 const gymSection = document.getElementById('gym-section');
 const datalist = document.getElementById('exercise-helpers');
 const actionDiv = document.getElementById('gym-action-bar');
 
+// Luodaan napit
 const startBtn = document.createElement('button');
-startBtn.textContent = '➕ ALOITA KIRJAUS';
+startBtn.textContent = '➕ ALOITA UUSI KIRJAUS';
 startBtn.className = 'btn-primary';
 
 const saveBtn = document.createElement('button');
-saveBtn.textContent = '💾 TALLENNA JA LOPETA';
+saveBtn.textContent = '💾 TALLENNA TREENI JA LOPETA';
 saveBtn.className = 'btn-success';
 saveBtn.style.display = 'none';
 
@@ -61,23 +62,20 @@ gymForm.addEventListener('submit', async (e) => {
     const reps = parseInt(document.getElementById('reps').value);
     const weights = document.getElementById('weights').value;
     const failure = document.getElementById('failure').checked;
-    
-    const wArr = weights.split(',').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
-    const volume = wArr.length === 1 ? sets * reps * wArr[0] : reps * wArr.reduce((a,b) => a+b, 0);
 
     try {
         await addDoc(collection(db, "gymEntries"), {
             workoutId: currentWorkoutId,
             exercise: exercise.toLowerCase(),
-            sets, reps, weights, failure, volume,
+            sets, reps, weights, failure,
             createdAt: serverTimestamp()
         });
         gymForm.reset();
         document.getElementById('exercise').focus();
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("Virhe tallennuksessa:", err); }
 });
 
-// --- 3. HISTORIA ---
+// --- 3. HISTORIAN RYHMITTELY ---
 onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (snapshot) => {
     logsContainer.innerHTML = '';
     const workouts = {}; 
@@ -86,9 +84,10 @@ onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (s
         const data = doc.data();
         const id = doc.id;
         const wId = data.workoutId || 'legacy';
+        
         if (!workouts[wId]) {
             workouts[wId] = {
-                date: data.createdAt?.toDate().toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }) || '...',
+                date: data.createdAt?.toDate().toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }) || 'Hetki sitten',
                 entries: []
             };
         }
@@ -104,7 +103,7 @@ onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (s
         const entriesHtml = workout.entries.map(entry => `
             <div class="entry-row">
                 <div class="entry-main">
-                    <strong>${entry.exercise}</strong> ${entry.sets}x${entry.reps} @ ${entry.weights}kg 
+                    <strong>${entry.exercise}</strong>: ${entry.sets}x${entry.reps} @ ${entry.weights}kg 
                     ${entry.failure ? '<span class="fail-badge">FAIL</span>' : ''}
                 </div>
                 <button onclick="deleteEntry('${entry.id}')" class="btn-delete">❌</button>
@@ -115,10 +114,14 @@ onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (s
         logsContainer.appendChild(card);
     });
 
+    // Autocomplete-lista
     const exNames = [...new Set(snapshot.docs.map(d => d.data().exercise))];
     datalist.innerHTML = exNames.map(n => `<option value="${n.charAt(0).toUpperCase() + n.slice(1)}">`).join('');
 });
 
+// Poisto
 window.deleteEntry = async (id) => {
-    if(confirm("Poistetaanko?")) await deleteDoc(doc(db, "gymEntries", id));
+    if(confirm("Poistetaanko tämä liike?")) {
+        await deleteDoc(doc(db, "gymEntries", id));
+    }
 };
