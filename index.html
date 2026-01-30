@@ -33,6 +33,18 @@
                 </div>
             </div>
 
+            <div class="card" style="border-top: 4px solid var(--primary);">
+                <h3>Intent & Current Focus</h3>
+                <p style="font-size: 0.9rem; margin-bottom: 12px;">
+                    Tämä on elävä käyttöjärjestelmä, jossa dokumentoin tapani ajatella, rakentaa ja iteroida – niin koodin kuin prosessien parissa.
+                </p>
+                <ul class="project-list">
+                    <li><strong>Learning:</strong> Modernit web-teknologiat (Vercel, Firebase, JS) aidon käytön kautta.</li>
+                    <li><strong>Building:</strong> Järjestelmäkeskeiset työkalut, jotka kääntävät kaaoksen selkeäksi dataksi.</li>
+                    <li><strong>Goal:</strong> Tehtävät, joissa rakenteella, selkeydellä ja toimivuudella on väliä.</li>
+                </ul>
+            </div>
+
             <div class="cv-grid">
                 <div class="card wide-card">
                     <h3>Case #1: Startup GSM Operator</h3>
@@ -72,16 +84,19 @@
                 <div class="card">
                     <h3>Learning Background</h3>
                     <p style="font-size: 0.8rem; color: var(--text-muted);">
-                        Oppimistyylini on projektilähtöinen. Formaali koulutus (Kiinteistöhoitaja 2025, Myynti 2015) on tukenut kokemusta, mutta osaamiseni on rakennettu ratkomalla aitoja ongelmia.
+                        Oppimistyylini on projektilähtöinen. Formaali koulutus on tukenut kokemusta, mutta osaamiseni on rakennettu ratkomalla aitoja ongelmia.
                     </p>
                 </div>
+            </div>
 
-                <div class="card">
-                    <h3>Personal Stack</h3>
-                    <ul class="project-list">
-                        <li><strong>Focus:</strong> Itsekritiikki 100 -> Laatu 100.</li>
-                        <li><strong>Dopamine:</strong> Järjestelmän valmistuminen ja datan virtaus.</li>
-                    </ul>
+            <div class="card hero-card" style="margin-top: 30px; text-align: center;">
+                <h3>Kiinnostuitko järjestelmällisestä otteesta?</h3>
+                <p style="font-size: 0.9rem; margin-bottom: 15px;">
+                    Etsin parhaillaan uusia haasteita, joissa pääsen hyödyntämään kykyäni rakentaa selkeyttä ja prosesseja.
+                </p>
+                <div class="tech-stack" style="justify-content: center;">
+                    <span class="tag" style="padding: 10px 20px;">[SÄHKÖPOSTISI]</span>
+                    <span class="tag" style="padding: 10px 20px;">GitHub: [TUNNUKSESI]</span>
                 </div>
             </div>
         </section>
@@ -114,7 +129,7 @@
                         <div class="form-group"><label>Toistot</label><input type="number" id="reps" required></div>
                     </div>
                     <div class="form-group">
-                        <label>Painot (kg) - <small>Käytä puolipistettä ; sarjojen välissä</small></label>
+                        <label>Painot (kg) - <small>Erottele ;</small></label>
                         <input type="text" id="weights" placeholder="Esim. 80; 85" required>
                     </div>
                     <label class="checkbox-group">
@@ -137,9 +152,22 @@
             </div>
             <div id="logs-container"></div>
         </section>
+
+        <section id="data-tab" class="tab-content">
+            <div class="card">
+                <h3>Analytics & System Insights</h3>
+                <p class="case-desc">In progress / Coming online</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+                    Tämä osio tulee visualisoimaan trendejä harjoittelun, työkuorman ja järjestelmän käytön välillä.
+                </p>
+                <div class="tech-stack">
+                    <span class="tag">Volume Trends</span>
+                    <span class="tag">Consistency Heatmaps</span>
+                </div>
+            </div>
+        </section>
         
-        <section id="vibe-tab" class="tab-content"><div class="card"><h3>Vibe Tracker</h3></div></section>
-        <section id="data-tab" class="tab-content"><div class="card"><h3>Analytics</h3></div></section>
+        <section id="vibe-tab" class="tab-content"><div class="card"><h3>Vibe Tracker</h3><p>Coming soon.</p></div></section>
     </main>
     <script type="module" src="app.js"></script>
 </body>

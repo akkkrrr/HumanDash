@@ -32,7 +32,6 @@ const cancelEditBtn = document.getElementById('cancel-edit-btn');
 const sortSelect = document.getElementById('sort-order');
 
 let currentWorkoutId = null;
-let editingWorkoutId = null;
 let unsubscribeLogs = null;
 
 const startBtn = document.createElement('button');
@@ -128,7 +127,6 @@ function resetForm() {
     document.getElementById('form-title').textContent = 'Kirjaa liike';
     document.getElementById('submit-btn').textContent = 'Lisää liike';
     cancelEditBtn.style.display = 'none';
-    editingWorkoutId = null;
 }
 
 cancelEditBtn.onclick = () => resetForm();
