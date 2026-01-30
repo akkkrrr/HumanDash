@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-
     <nav class="top-nav">
         <div class="nav-container">
             <span class="brand">HUMAN<strong>DASH</strong></span>
@@ -22,7 +21,6 @@
     </nav>
 
     <main class="container">
-        
         <section id="cv-tab" class="tab-content active">
             <div class="hero-card card">
                 <h1>System Architect & Process Fixer</h1>
@@ -34,7 +32,6 @@
                     <span class="tag">Real-time Apps</span>
                 </div>
             </div>
-
             <div class="cv-grid">
                 <div class="card wide-card">
                     <h3>Case #1: Startup GSM Operator</h3>
@@ -42,10 +39,8 @@
                     <ul class="project-list">
                         <li><strong>Infrastruktuuri:</strong> Tilaustietokantojen ja toimitusketjujen suunnittelu nollasta.</li>
                         <li><strong>Optimointi:</strong> In-house asiakaspalvelun ja 24/7 päivystyslogiikan rakentaminen.</li>
-                        <li><strong>Tulos:</strong> Hallittu kasvu ja selkeät vastuut kaoottisessa startup-vaiheessa.</li>
                     </ul>
                 </div>
-
                 <div class="card">
                     <h3>Case #2: Call Center Lead</h3>
                     <p class="case-desc">Prosessien ja ammattimaisuuden palauttaminen.</p>
@@ -54,7 +49,6 @@
                         <li><strong>Johtajuus:</strong> Tiimin ohjaus kohti rehdimpää toimintatapaa.</li>
                     </ul>
                 </div>
-
                 <div class="card">
                     <h3>Case #3: Municipal Data Mapping</h3>
                     <p class="case-desc">Kiinteistödatan verifiointi maastossa.</p>
@@ -63,34 +57,17 @@
                         <li><strong>Vastuu:</strong> Itsenäinen kenttätyö ja datan siirto verottajan kantoihin.</li>
                     </ul>
                 </div>
-
                 <div class="card wide-card" style="border-right: 4px solid var(--primary);">
                     <h3>The Human Side: Structural Construction</h3>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">
                         Vastapainona digitaalisuudelle olen rakentanut omakotitaloja alusta loppuun. Se on opettanut ymmärtämään fyysisiä rakenteita ja saattamaan projektit maaliin – oli kyseessä koodi tai tiilikatto.
                     </p>
                 </div>
-
-                <div class="card">
-                    <h3>Learning Background</h3>
-                    <p style="font-size: 0.8rem; color: var(--text-muted);">
-                        Oppimistyylini on projektilähtöinen. Formaali koulutus (Kiinteistöhoitaja 2025, Myynti 2015) on tukenut kokemusta, mutta osaamiseni on rakennettu ratkomalla aitoja ongelmia.
-                    </p>
-                </div>
-
-                <div class="card">
-                    <h3>Personal Stack</h3>
-                    <ul class="project-list">
-                        <li><strong>Focus:</strong> Itsekritiikki 100 -> Laatu 100.</li>
-                        <li><strong>Dopamine:</strong> Järjestelmän valmistuminen ja datan virtaus.</li>
-                    </ul>
-                </div>
             </div>
         </section>
 
         <section id="gym-tab" class="tab-content">
             <div id="gym-action-bar" class="action-bar"></div>
-            
             <div id="workout-summary-card" class="card" style="display: none; border-top: 4px solid var(--success);">
                 <h3>Päätä treeni</h3>
                 <div class="form-group">
@@ -99,15 +76,13 @@
                 </div>
                 <button id="final-save-btn" class="btn-success">TALLENNA JA ARKISTOI</button>
             </div>
-
             <section id="gym-section" class="card" style="display: none;">
                 <h2 id="form-title">Kirjaa liike</h2>
                 <form id="gym-form">
                     <input type="hidden" id="entry-id">
                     <div class="form-group">
                         <label>Liike</label>
-                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Penkki" required autocomplete="off">
-                        <datalist id="exercise-helpers"></datalist>
+                        <input type="text" id="exercise" placeholder="Esim. Kyykky" required>
                     </div>
                     <div class="form-row">
                         <div class="form-group"><label>Sarjat</label><input type="number" id="sets" required></div>
@@ -115,7 +90,7 @@
                     </div>
                     <div class="form-group">
                         <label>Painot (kg) - <small>Erota sarjat puolipisteellä ;</small></label>
-                        <input type="text" id="weights" placeholder="Esim. 80; 82,5" required>
+                        <input type="text" id="weights" placeholder="Esim. 80; 85" required>
                     </div>
                     <label class="checkbox-group">
                         <input type="checkbox" id="failure"> <span>Failure?</span>
@@ -123,9 +98,8 @@
                     <button type="submit" id="submit-btn" class="btn-add">Lisää liike</button>
                 </form>
             </section>
-
             <div class="logs-header">
-                <h3>Treenihistoria</h3>
+                <h3>Historia</h3>
                 <select id="sort-order" class="sort-select">
                     <option value="desc">Uusin ensin</option>
                     <option value="asc">Vanhin ensin</option>
@@ -133,16 +107,7 @@
             </div>
             <div id="logs-container"></div>
         </section>
-
-        <section id="vibe-tab" class="tab-content">
-            <div class="card"><h3>Vibe Tracker</h3><p>Tähän rakennetaan seuraavaksi fiilismittari.</p></div>
-        </section>
-
-        <section id="data-tab" class="tab-content">
-            <div class="card"><h3>Analytics</h3><p>Tulossa: Volyymitrendit.</p></div>
-        </section>
     </main>
-
     <script type="module" src="app.js"></script>
 </body>
 </html>

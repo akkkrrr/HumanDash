@@ -19,7 +19,7 @@ navBtns.forEach(btn => {
     });
 });
 
-// --- SALI-LOGIIKKA ---
+// --- GYM ELEMENTIT ---
 const gymForm = document.getElementById('gym-form');
 const logsContainer = document.getElementById('logs-container');
 const gymSection = document.getElementById('gym-section');
@@ -32,6 +32,7 @@ const sortSelect = document.getElementById('sort-order');
 let currentWorkoutId = null;
 let unsubscribeLogs = null;
 
+// NAPIT
 const startBtn = document.createElement('button');
 startBtn.textContent = '➕ ALOITA UUSI TREENI';
 startBtn.className = 'btn-primary';
@@ -44,6 +45,7 @@ finishBtn.style.display = 'none';
 actionDiv.appendChild(startBtn);
 actionDiv.appendChild(finishBtn);
 
+// LOGIIKKA
 startBtn.onclick = async () => {
     const workoutRef = doc(collection(db, "workouts"));
     currentWorkoutId = workoutRef.id;
@@ -99,9 +101,10 @@ gymForm.onsubmit = async (e) => {
     }
     gymForm.reset();
     document.getElementById('entry-id').value = '';
+    document.getElementById('form-title').textContent = 'Kirjaa liike';
 };
 
-// --- HISTORIA ---
+// --- HISTORIA REAALIAJASSA ---
 function loadLogs(order = 'desc') {
     if (unsubscribeLogs) unsubscribeLogs();
     const q = query(collection(db, "gymEntries"), orderBy("createdAt", order));
@@ -113,7 +116,7 @@ function loadLogs(order = 'desc') {
             const wId = d.workoutId || 'legacy';
             if (!groups[wId]) groups[wId] = { entries: [], vol: 0, date: d.createdAt?.toDate() || new Date() };
             groups[wId].entries.push({ id: doc.id, ...d });
-            groups[wId].vol += d.volume;
+            groups[wId].vol += (d.volume || 0);
         });
 
         logsContainer.innerHTML = '';
@@ -125,28 +128,52 @@ function loadLogs(order = 'desc') {
             card.className = 'workout-card';
             if(wId === currentWorkoutId) card.classList.add('active-workout-card');
 
-            card.innerHTML = `
-                <div class="workout-header">
-                    <div class="workout-title">${g.date.toLocaleDateString('fi-FI')}</div>
-                    <div class="workout-meta">${g.vol} kg</div>
-                </div>
-                <div class="workout-body"></div>
-            `;
-            
-            const body = card.querySelector('.workout-body');
+            const header = document.createElement('div');
+            header.className = 'workout-header';
+            header.innerHTML = `<div>${g.date.toLocaleDateString('fi-FI')}</div><div class="workout-meta">${g.vol} kg</div>`;
+            card.appendChild(header);
+
+            const body = document.createElement('div');
+            body.className = 'workout-body';
+
             g.entries.forEach(e => {
                 const row = document.createElement('div');
                 row.className = 'entry-row';
                 row.innerHTML = `
-                    <div><strong>${e.exercise}</strong> ${e.sets}x${e.reps} @ ${e.weights}</div>
-                    <div class="entry-vol">${e.volume} kg</div>
+                    <div><strong>${e.exercise}</strong> ${e.sets}x${e.reps} @ ${e.weights}kg<br><small>${e.volume} kg vol</small></div>
+                    <div class="actions">
+                        <button class="btn-edit" onclick="editEntry('${e.id}')">✏️</button>
+                        <button class="btn-delete" onclick="deleteEntry('${e.id}')">❌</button>
+                    </div>
                 `;
                 body.appendChild(row);
             });
+            card.appendChild(body);
             logsContainer.appendChild(card);
         }
     });
 }
+
+// GLOBAALIT FUNKTIOT (Window-objektiin, jotta HTML-napit löytävät ne)
+window.editEntry = async (id) => {
+    const s = await getDoc(doc(db, "gymEntries", id));
+    if(s.exists()) {
+        const d = s.data();
+        document.getElementById('exercise').value = d.exercise;
+        document.getElementById('sets').value = d.sets;
+        document.getElementById('reps').value = d.reps;
+        document.getElementById('weights').value = d.weights;
+        document.getElementById('failure').checked = d.failure;
+        document.getElementById('entry-id').value = id;
+        gymSection.style.display = 'block';
+        document.getElementById('form-title').textContent = 'Muokkaa liikettä';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+};
+
+window.deleteEntry = async (id) => {
+    if(confirm("Poistetaanko liike?")) await deleteDoc(doc(db, "gymEntries", id));
+};
 
 sortSelect.onchange = (e) => loadLogs(e.target.value);
 loadLogs('desc');
