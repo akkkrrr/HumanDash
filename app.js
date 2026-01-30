@@ -1,6 +1,6 @@
 import { db } from './firebase.js';
 import { 
-    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, setDoc, updateDoc, getDoc 
+    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, setDoc, updateDoc, getDoc, getDocs, where 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // --- NAVIGAATIO ---
@@ -27,12 +27,14 @@ const actionDiv = document.getElementById('gym-action-bar');
 const summaryCard = document.getElementById('workout-summary-card');
 const notesInput = document.getElementById('workout-notes');
 const finalSaveBtn = document.getElementById('final-save-btn');
+const discardWorkoutBtn = document.getElementById('discard-workout-btn');
+const cancelEditBtn = document.getElementById('cancel-edit-btn');
 const sortSelect = document.getElementById('sort-order');
 
 let currentWorkoutId = null;
+let editingWorkoutId = null; // Tärkeä: pidetään muokattavan kohteen alkuperäinen treeni-ID tallessa
 let unsubscribeLogs = null;
 
-// NAPIT
 const startBtn = document.createElement('button');
 startBtn.textContent = '➕ ALOITA UUSI TREENI';
 startBtn.className = 'btn-primary';
@@ -45,7 +47,7 @@ finishBtn.style.display = 'none';
 actionDiv.appendChild(startBtn);
 actionDiv.appendChild(finishBtn);
 
-// LOGIIKKA
+// --- TREENIN HALLINTA ---
 startBtn.onclick = async () => {
     const workoutRef = doc(collection(db, "workouts"));
     currentWorkoutId = workoutRef.id;
@@ -61,21 +63,39 @@ finishBtn.onclick = () => {
     finishBtn.style.display = 'none';
 };
 
+const closeWorkoutSession = () => {
+    currentWorkoutId = null;
+    summaryCard.style.display = 'none';
+    startBtn.style.display = 'block';
+    notesInput.value = '';
+    resetForm();
+};
+
 finalSaveBtn.onclick = async () => {
     if(currentWorkoutId) {
+        // Tarkistetaan onko treenissä oikeasti liikkeitä
+        const q = query(collection(db, "gymEntries"), where("workoutId", "==", currentWorkoutId));
+        const snap = await getDocs(q);
+        if (snap.empty && !confirm("Treeni on tyhjä. Tallennetaanko silti?")) return;
+
         await updateDoc(doc(db, "workouts", currentWorkoutId), {
             status: 'completed',
             endedAt: serverTimestamp(),
             notes: notesInput.value.trim()
         });
     }
-    currentWorkoutId = null;
-    summaryCard.style.display = 'none';
-    startBtn.style.display = 'block';
-    notesInput.value = '';
-    gymForm.reset();
+    closeWorkoutSession();
 };
 
+discardWorkoutBtn.onclick = async () => {
+    if(currentWorkoutId && confirm("Poistetaanko tämä treenisessio kokonaan?")) {
+        await deleteDoc(doc(db, "workouts", currentWorkoutId));
+        // Huom: orpojen liikkeiden siivous voisi olla tässä, mutta oletetaan että käyttäjä poistaa vain tyhjän.
+        closeWorkoutSession();
+    }
+};
+
+// --- LOMAKKEEN HALLINTA ---
 gymForm.onsubmit = async (e) => {
     e.preventDefault();
     const id = document.getElementById('entry-id').value;
@@ -84,7 +104,11 @@ gymForm.onsubmit = async (e) => {
     const reps = parseInt(document.getElementById('reps').value);
     const weightsStr = document.getElementById('weights').value;
 
-    const wArray = weightsStr.replace(/,/g, '.').split(';').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
+    // Puhdistetaan syöte (trimmaus ja pilkun muunnos pisteeksi)
+    const wArray = weightsStr.split(';').map(w => parseFloat(w.replace(',', '.').trim())).filter(w => !isNaN(w));
+    
+    if (wArray.length === 0) { alert("Syötä painot oikein (esim. 80; 82.5)"); return; }
+
     let vol = wArray.length === 1 ? sets * reps * wArray[0] : reps * wArray.reduce((a, b) => a + b, 0);
 
     const data = {
@@ -97,19 +121,33 @@ gymForm.onsubmit = async (e) => {
     if (id) {
         await updateDoc(doc(db, "gymEntries", id), data);
     } else {
-        await addDoc(collection(db, "gymEntries"), { ...data, workoutId: currentWorkoutId, createdAt: serverTimestamp() });
+        await addDoc(collection(db, "gymEntries"), { 
+            ...data, 
+            workoutId: currentWorkoutId, 
+            createdAt: serverTimestamp() 
+        });
     }
+    resetForm();
+};
+
+function resetForm() {
     gymForm.reset();
     document.getElementById('entry-id').value = '';
     document.getElementById('form-title').textContent = 'Kirjaa liike';
-};
+    document.getElementById('submit-btn').textContent = 'Lisää liike';
+    cancelEditBtn.style.display = 'none';
+    gymSection.classList.remove('edit-active');
+    editingWorkoutId = null;
+}
 
-// --- HISTORIA REAALIAJASSA ---
+cancelEditBtn.onclick = () => resetForm();
+
+// --- HISTORIA ---
 function loadLogs(order = 'desc') {
     if (unsubscribeLogs) unsubscribeLogs();
     const q = query(collection(db, "gymEntries"), orderBy("createdAt", order));
     
-    unsubscribeLogs = onSnapshot(q, async (snapshot) => {
+    unsubscribeLogs = onSnapshot(q, (snapshot) => {
         const groups = {};
         snapshot.forEach(doc => {
             const d = doc.data();
@@ -122,39 +160,40 @@ function loadLogs(order = 'desc') {
         logsContainer.innerHTML = '';
         const sortedIds = Object.keys(groups).sort((a,b) => order === 'desc' ? groups[b].date - groups[a].date : groups[a].date - groups[b].date);
 
-        for (const wId of sortedIds) {
+        sortedIds.forEach(wId => {
             const g = groups[wId];
             const card = document.createElement('div');
             card.className = 'workout-card';
             if(wId === currentWorkoutId) card.classList.add('active-workout-card');
 
-            const header = document.createElement('div');
-            header.className = 'workout-header';
-            header.innerHTML = `<div>${g.date.toLocaleDateString('fi-FI')}</div><div class="workout-meta">${g.vol} kg</div>`;
-            card.appendChild(header);
-
-            const body = document.createElement('div');
-            body.className = 'workout-body';
-
+            card.innerHTML = `
+                <div class="workout-header">
+                    <div>${g.date.toLocaleDateString('fi-FI')} <small>v${g.vol}kg</small></div>
+                </div>
+                <div class="workout-body"></div>
+            `;
+            
+            const body = card.querySelector('.workout-body');
             g.entries.forEach(e => {
                 const row = document.createElement('div');
                 row.className = 'entry-row';
                 row.innerHTML = `
-                    <div><strong>${e.exercise}</strong> ${e.sets}x${e.reps} @ ${e.weights}kg<br><small>${e.volume} kg vol</small></div>
-                    <div class="actions">
-                        <button class="btn-edit" onclick="editEntry('${e.id}')">✏️</button>
-                        <button class="btn-delete" onclick="deleteEntry('${e.id}')">❌</button>
+                    <div class="entry-info">
+                        <strong>${e.exercise}</strong><br>
+                        <small>${e.sets}x${e.reps} @ ${e.weights}kg (${e.volume}kg)</small>
+                    </div>
+                    <div class="entry-actions">
+                        <button class="btn-icon" onclick="editEntry('${e.id}')">✏️</button>
+                        <button class="btn-icon" onclick="deleteEntry('${e.id}')">❌</button>
                     </div>
                 `;
                 body.appendChild(row);
             });
-            card.appendChild(body);
             logsContainer.appendChild(card);
-        }
+        });
     });
 }
 
-// GLOBAALIT FUNKTIOT (Window-objektiin, jotta HTML-napit löytävät ne)
 window.editEntry = async (id) => {
     const s = await getDoc(doc(db, "gymEntries", id));
     if(s.exists()) {
@@ -165,14 +204,20 @@ window.editEntry = async (id) => {
         document.getElementById('weights').value = d.weights;
         document.getElementById('failure').checked = d.failure;
         document.getElementById('entry-id').value = id;
+        
+        editingWorkoutId = d.workoutId; // Lukitaan alkuperäinen ID
+        
         gymSection.style.display = 'block';
-        document.getElementById('form-title').textContent = 'Muokkaa liikettä';
+        gymSection.classList.add('edit-active');
+        document.getElementById('form-title').textContent = 'MUOKATAAN LIIKETTA';
+        document.getElementById('submit-btn').textContent = 'Tallenna muutokset';
+        cancelEditBtn.style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 };
 
 window.deleteEntry = async (id) => {
-    if(confirm("Poistetaanko liike?")) await deleteDoc(doc(db, "gymEntries", id));
+    if(confirm("Poistetaanko tämä liike historiasta?")) await deleteDoc(doc(db, "gymEntries", id));
 };
 
 sortSelect.onchange = (e) => loadLogs(e.target.value);

@@ -1,0 +1,16 @@
+# Changelog
+
+## [2.1] - 2026-01-31
+### Lisätty
+- **Vahva Muokkaustila:** Lomake lukittuu nyt edit-tilaan, vaihtaa otsikkoa ja tarjoaa "Peruuta"-vaihtoehdon.
+- **Treenin poisto:** Lisätty mahdollisuus poistaa tyhjä treenisessio tallentamatta.
+- **Input-siivous:** Painojen syöttö puhdistaa nyt automaattisesti välilyönnit ja muuntaa pilkut pisteiksi.
+
+### Korjattu
+- **Quirks Mode:** Varmistettu oikea DOCTYPE ja rakenteen eheys.
+- **Edit/Delete Bugit:** Palautettu puuttuneet interaktiot treenilogiin.
+- **Datan eheys:** Estetty tyhjien treenien tahaton tallentaminen.
+
+## [2.0] - 2026-01-30
+- Ensimmäinen "System Architect" CV-rakenne.
+- Firebase-integraatio ja reaaliaikaiset treenilokit.

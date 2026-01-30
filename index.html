@@ -10,7 +10,7 @@
 <body>
     <nav class="top-nav">
         <div class="nav-container">
-            <span class="brand">HUMAN<strong>DASH</strong></span>
+            <span class="brand">HUMAN<strong>DASH</strong> v2.1</span>
             <div class="nav-links">
                 <button class="nav-btn active" data-target="cv-tab">👤 CV</button>
                 <button class="nav-btn" data-target="gym-tab">🏋️ GYM</button>
@@ -22,82 +22,50 @@
 
     <main class="container">
         <section id="cv-tab" class="tab-content active">
-            <div class="hero-card card">
-                <h1>System Architect & Process Fixer</h1>
-                <p class="subtitle">"Etsin järjestyksen sieltä, missä muut näkevät vain sotkua."</p>
-                <div class="tech-stack">
-                    <span class="tag">Problem Solving</span>
-                    <span class="tag">Process Logic</span>
-                    <span class="tag">Data Mapping</span>
-                    <span class="tag">Real-time Apps</span>
-                </div>
-            </div>
-            <div class="cv-grid">
-                <div class="card wide-card">
-                    <h3>Case #1: Startup GSM Operator</h3>
-                    <p class="case-desc">Kokonaisvaltaisen operatiivisen järjestelmän arkkitehtuuri.</p>
-                    <ul class="project-list">
-                        <li><strong>Infrastruktuuri:</strong> Tilaustietokantojen ja toimitusketjujen suunnittelu nollasta.</li>
-                        <li><strong>Optimointi:</strong> In-house asiakaspalvelun ja 24/7 päivystyslogiikan rakentaminen.</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Case #2: Call Center Lead</h3>
-                    <p class="case-desc">Prosessien ja ammattimaisuuden palauttaminen.</p>
-                    <ul class="project-list">
-                        <li><strong>Rakenne:</strong> Koulutusmateriaalit ja raportointimallit kriisiyhtiöön.</li>
-                        <li><strong>Johtajuus:</strong> Tiimin ohjaus kohti rehdimpää toimintatapaa.</li>
-                    </ul>
-                </div>
-                <div class="card">
-                    <h3>Case #3: Municipal Data Mapping</h3>
-                    <p class="case-desc">Kiinteistödatan verifiointi maastossa.</p>
-                    <ul class="project-list">
-                        <li><strong>Tarkkuus:</strong> Tuhansien rakennusten luokittelu paikannusjärjestelmiin.</li>
-                        <li><strong>Vastuu:</strong> Itsenäinen kenttätyö ja datan siirto verottajan kantoihin.</li>
-                    </ul>
-                </div>
-                <div class="card wide-card" style="border-right: 4px solid var(--primary);">
-                    <h3>The Human Side: Structural Construction</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">
-                        Vastapainona digitaalisuudelle olen rakentanut omakotitaloja alusta loppuun. Se on opettanut ymmärtämään fyysisiä rakenteita ja saattamaan projektit maaliin – oli kyseessä koodi tai tiilikatto.
-                    </p>
-                </div>
-            </div>
-        </section>
+            </section>
 
         <section id="gym-tab" class="tab-content">
             <div id="gym-action-bar" class="action-bar"></div>
+            
             <div id="workout-summary-card" class="card" style="display: none; border-top: 4px solid var(--success);">
                 <h3>Päätä treeni</h3>
                 <div class="form-group">
                     <label>Treenin muistiinpanot</label>
                     <input type="text" id="workout-notes" placeholder="Miten kulki?">
                 </div>
-                <button id="final-save-btn" class="btn-success">TALLENNA JA ARKISTOI</button>
+                <div class="form-row">
+                    <button id="final-save-btn" class="btn-success">TALLENNA</button>
+                    <button id="discard-workout-btn" class="btn-danger-outline">POISTA TYHJÄNÄ</button>
+                </div>
             </div>
-            <section id="gym-section" class="card" style="display: none;">
+
+            <section id="gym-section" class="card edit-mode-container" style="display: none;">
                 <h2 id="form-title">Kirjaa liike</h2>
                 <form id="gym-form">
                     <input type="hidden" id="entry-id">
                     <div class="form-group">
                         <label>Liike</label>
-                        <input type="text" id="exercise" placeholder="Esim. Kyykky" required>
+                        <input type="text" id="exercise" placeholder="Esim. Kyykky" required autocomplete="off">
                     </div>
                     <div class="form-row">
                         <div class="form-group"><label>Sarjat</label><input type="number" id="sets" required></div>
                         <div class="form-group"><label>Toistot</label><input type="number" id="reps" required></div>
                     </div>
                     <div class="form-group">
-                        <label>Painot (kg) - <small>Erota sarjat puolipisteellä ;</small></label>
+                        <label>Painot (kg) - <small>Käytä puolipistettä ; sarjojen välissä</small></label>
                         <input type="text" id="weights" placeholder="Esim. 80; 85" required>
                     </div>
                     <label class="checkbox-group">
                         <input type="checkbox" id="failure"> <span>Failure?</span>
                     </label>
-                    <button type="submit" id="submit-btn" class="btn-add">Lisää liike</button>
+                    
+                    <div id="form-actions" class="form-row">
+                        <button type="submit" id="submit-btn" class="btn-add">Lisää liike</button>
+                        <button type="button" id="cancel-edit-btn" class="btn-cancel" style="display: none;">Peruuta</button>
+                    </div>
                 </form>
             </section>
+
             <div class="logs-header">
                 <h3>Historia</h3>
                 <select id="sort-order" class="sort-select">
