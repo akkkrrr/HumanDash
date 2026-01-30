@@ -1,3 +1,28 @@
+// --- TAB-HALLINTA ---
+const navBtns = document.querySelectorAll('.nav-btn');
+const tabs = document.querySelectorAll('.tab-content');
+
+navBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+
+        // Vaihda aktiivinen nappi
+        navBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Vaihda näkyvä osio
+        tabs.forEach(tab => {
+            tab.classList.remove('active');
+            if (tab.id === target) tab.classList.add('active');
+        });
+    });
+});
+
+// --- TÄSTÄ ALKAA AIEMPI GYM-LOG LOGIIKKA ---
+// (Muista päivittää elementtien haku, jos muutit niiden ID:itä!)
+// Esim. startBtn pitää nyt lisätä gym-action-bar diviin, ei headeriin.
+const actionDiv = document.getElementById('gym-action-bar');
+// ... loput koodista tähän ...
 // Välilehtien vaihto-logiikka
 const navLinks = document.querySelectorAll('.nav-link');
 const tabs = document.querySelectorAll('.tab-content');

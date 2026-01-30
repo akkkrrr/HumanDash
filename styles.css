@@ -188,4 +188,70 @@ button {
 
 .tab-content.active {
     display: block; /* Vain aktiivinen näkyviin */
+}/* Yläreunan kiinteä navigaatio */
+.top-nav {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 10px 0;
+    margin-bottom: 30px;
+}
+
+.nav-container {
+    max-width: 500px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.brand {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.nav-links {
+    display: flex;
+    gap: 5px;
+}
+
+.nav-btn {
+    background: transparent;
+    color: var(--text-muted);
+    border: none;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.nav-btn.active {
+    color: var(--primary);
+    background: rgba(56, 189, 248, 0.1);
+}
+
+/* Tabien piilotus */
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Tech Stack tägit */
+.tech-stack {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.tag {
+    background: #334155;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: var(--primary);
 }

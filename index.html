@@ -3,42 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minun Dashboard</title>
+    <title>Human Dashboard | Personal Portal</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <nav class="main-nav">
-        <button class="nav-link active" data-target="cv-section">👤 CV & Info</button>
-        <button class="nav-link" data-target="gym-module">🏋️ Sali-logi</button>
-        <button class="nav-link" data-target="links-section">🔗 Linkit</button>
+    <nav class="top-nav">
+        <div class="nav-container">
+            <span class="brand">HUMAN<strong>DASH</strong></span>
+            <div class="nav-links">
+                <button class="nav-btn active" data-target="cv-tab">👤 CV</button>
+                <button class="nav-btn" data-target="gym-tab">🏋️ GYM</button>
+                <button class="nav-btn" data-target="vibe-tab">✨ VIBE</button>
+                <button class="nav-btn" data-target="data-tab">📊 DATA</button>
+            </div>
+        </div>
     </nav>
 
     <main class="container">
         
-        <section id="cv-section" class="tab-content active">
-            <header>
+        <section id="cv-tab" class="tab-content active">
+            <div class="hero-card card">
                 <h1>Etunimi Sukunimi</h1>
-                <p class="subtitle">Full-stack Kehittäjä & Harrastaja</p>
-            </header>
+                <p>Self-taught Developer & Biohacker</p>
+                <div class="tech-stack">
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">Firebase</span>
+                    <span class="tag">Vercel</span>
+                    <span class="tag">GitHub</span>
+                </div>
+            </div>
             <div class="card">
-                <h3>Esittely</h3>
-                <p>Tähän voit kirjoittaa CV-tekstisi, taitosi ja projektisi.</p>
+                <h3>Projektit</h3>
+                <p>Tähän voit listata Notebook Calendarin ja Task Listin.</p>
             </div>
         </section>
 
-        <section id="gym-module" class="tab-content">
-            <header>
-                <h1>Gym Log</h1>
-                <p class="subtitle">Oma treenidatan hallinta</p>
-            </header>
+        <section id="gym-tab" class="tab-content">
+            <div id="gym-action-bar" class="action-bar"></div>
             
-            <section id="gym-form-container" class="card" style="display: none;">
+            <section id="gym-section" class="card" style="display: none;">
+                <h2>Kirjaa liike</h2>
+                <form id="gym-form">
+                    <input type="text" id="exercise" list="exercise-helpers" placeholder="Liike" required autocomplete="off">
+                    <datalist id="exercise-helpers"></datalist>
+                    <div class="form-row">
+                        <input type="number" id="sets" placeholder="Sarjat">
+                        <input type="number" id="reps" placeholder="Toistot">
+                    </div>
+                    <input type="text" id="weights" placeholder="Painot (esim. 80, 80, 85)">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="failure"> Failureen?
+                    </label>
+                    <button type="submit" class="btn-add">Lisää liike</button>
                 </form>
             </section>
 
             <div id="logs-container"></div>
+        </section>
+
+        <section id="vibe-tab" class="tab-content">
+            <div class="card">
+                <h2>Vibe & Vitamins</h2>
+                <p>Tämä osio on työn alla. Tähän tulee vitamiinistackin seuranta ja Mood Tracker.</p>
+            </div>
+        </section>
+
+        <section id="data-tab" class="tab-content">
+            <div class="card">
+                <h2>Health Data</h2>
+                <p>Tähän integroidaan Garmin-data, painokäyrät ja unianalyysi.</p>
+            </div>
         </section>
 
     </main>
