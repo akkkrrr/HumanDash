@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Dashboard | Personal Portal</title>
+    <title>Human Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
@@ -26,7 +26,7 @@
         <section id="cv-tab" class="tab-content active">
             <div class="hero-card card">
                 <h1>Etunimi Sukunimi</h1>
-                <p>Self-taught Developer & Biohacker</p>
+                <p>Full-stack Kehittäjä & Biohakkeri</p>
                 <div class="tech-stack">
                     <span class="tag">JavaScript</span>
                     <span class="tag">Firebase</span>
@@ -35,8 +35,8 @@
                 </div>
             </div>
             <div class="card">
-                <h3>Projektit</h3>
-                <p>Tähän voit listata Notebook Calendarin ja Task Listin.</p>
+                <h3>Tervetuloa</h3>
+                <p>Tämä on henkilökohtainen hallintapaneelini, johon yhdistyvät ammatillinen osaaminen ja elämänhallinnan työkalut.</p>
             </div>
         </section>
 
@@ -46,17 +46,29 @@
             <section id="gym-section" class="card" style="display: none;">
                 <h2>Kirjaa liike</h2>
                 <form id="gym-form">
-                    <input type="text" id="exercise" list="exercise-helpers" placeholder="Liike" required autocomplete="off">
-                    <datalist id="exercise-helpers"></datalist>
-                    <div class="form-row">
-                        <input type="number" id="sets" placeholder="Sarjat">
-                        <input type="number" id="reps" placeholder="Toistot">
+                    <div class="form-group">
+                        <label for="exercise">Liike</label>
+                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Kyykky" required autocomplete="off">
+                        <datalist id="exercise-helpers"></datalist>
                     </div>
-                    <input type="text" id="weights" placeholder="Painot (esim. 80, 80, 85)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Sarjat</label>
+                            <input type="number" id="sets" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Toistot</label>
+                            <input type="number" id="reps" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Painot (kg)</label>
+                        <input type="text" id="weights" placeholder="Esim. 100 tai 100, 105" required>
+                    </div>
                     <label class="checkbox-group">
-                        <input type="checkbox" id="failure"> Failureen?
+                        <input type="checkbox" id="failure"> Sarja tehty failureen?
                     </label>
-                    <button type="submit" class="btn-add">Lisää liike</button>
+                    <button type="submit" class="btn-add">Lisää liike treeniin</button>
                 </form>
             </section>
 
@@ -65,15 +77,15 @@
 
         <section id="vibe-tab" class="tab-content">
             <div class="card">
-                <h2>Vibe & Vitamins</h2>
-                <p>Tämä osio on työn alla. Tähän tulee vitamiinistackin seuranta ja Mood Tracker.</p>
+                <h2>Vibe Tracker</h2>
+                <p>Tulossa: Vitamiiniseuranta ja päivittäinen fiilis-logi.</p>
             </div>
         </section>
 
         <section id="data-tab" class="tab-content">
             <div class="card">
-                <h2>Health Data</h2>
-                <p>Tähän integroidaan Garmin-data, painokäyrät ja unianalyysi.</p>
+                <h2>Health Analytics</h2>
+                <p>Tulossa: Garmin API -integraatio ja painokäyrät.</p>
             </div>
         </section>
 

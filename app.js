@@ -1,16 +1,17 @@
-// --- TAB-HALLINTA ---
+import { db } from './firebase.js';
+import { 
+    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// --- 1. NAVIGOINTI ---
 const navBtns = document.querySelectorAll('.nav-btn');
 const tabs = document.querySelectorAll('.tab-content');
 
 navBtns.forEach(btn => {
     btn.addEventListener('click', () => {
         const target = btn.dataset.target;
-
-        // Vaihda aktiivinen nappi
         navBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
-        // Vaihda näkyvä osio
         tabs.forEach(tab => {
             tab.classList.remove('active');
             if (tab.id === target) tab.classList.add('active');
@@ -18,52 +19,19 @@ navBtns.forEach(btn => {
     });
 });
 
-// --- TÄSTÄ ALKAA AIEMPI GYM-LOG LOGIIKKA ---
-// (Muista päivittää elementtien haku, jos muutit niiden ID:itä!)
-// Esim. startBtn pitää nyt lisätä gym-action-bar diviin, ei headeriin.
-const actionDiv = document.getElementById('gym-action-bar');
-// ... loput koodista tähän ...
-// Välilehtien vaihto-logiikka
-const navLinks = document.querySelectorAll('.nav-link');
-const tabs = document.querySelectorAll('.tab-content');
-
-navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        const target = link.dataset.target;
-
-        // Vaihda aktiivinen nappi
-        navLinks.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-
-        // Vaihda näkyvä osio
-        tabs.forEach(tab => {
-            tab.classList.remove('active');
-            if (tab.id === target) tab.classList.add('active');
-        });
-    });
-});
-import { db } from './firebase.js';
-import { 
-    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+// --- 2. GYM-LOG LOGIIKKA ---
 const gymForm = document.getElementById('gym-form');
 const logsContainer = document.getElementById('logs-container');
 const gymSection = document.getElementById('gym-section');
 const datalist = document.getElementById('exercise-helpers');
-
-// Hallintanapit
-const header = document.querySelector('header');
-const actionDiv = document.createElement('div');
-actionDiv.className = 'action-bar';
-header.appendChild(actionDiv);
+const actionDiv = document.getElementById('gym-action-bar');
 
 const startBtn = document.createElement('button');
-startBtn.textContent = '➕ Aloita kirjaus';
+startBtn.textContent = '➕ ALOITA KIRJAUS';
 startBtn.className = 'btn-primary';
 
 const saveBtn = document.createElement('button');
-saveBtn.textContent = '💾 Tallenna treeni ja lopeta';
+saveBtn.textContent = '💾 TALLENNA JA LOPETA';
 saveBtn.className = 'btn-success';
 saveBtn.style.display = 'none';
 
@@ -71,8 +39,6 @@ actionDiv.appendChild(startBtn);
 actionDiv.appendChild(saveBtn);
 
 let currentWorkoutId = null;
-
-// --- TAPAHTUMAT ---
 
 startBtn.addEventListener('click', () => {
     currentWorkoutId = 'workout-' + Date.now();
@@ -96,69 +62,63 @@ gymForm.addEventListener('submit', async (e) => {
     const weights = document.getElementById('weights').value;
     const failure = document.getElementById('failure').checked;
     
-    // Volyymin laskenta
     const wArr = weights.split(',').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
     const volume = wArr.length === 1 ? sets * reps * wArr[0] : reps * wArr.reduce((a,b) => a+b, 0);
 
-    await addDoc(collection(db, "gymEntries"), {
-        workoutId: currentWorkoutId,
-        exercise: exercise.toLowerCase(),
-        sets, reps, weights, failure, volume,
-        createdAt: serverTimestamp()
-    });
-    gymForm.reset();
-    document.getElementById('exercise').focus();
+    try {
+        await addDoc(collection(db, "gymEntries"), {
+            workoutId: currentWorkoutId,
+            exercise: exercise.toLowerCase(),
+            sets, reps, weights, failure, volume,
+            createdAt: serverTimestamp()
+        });
+        gymForm.reset();
+        document.getElementById('exercise').focus();
+    } catch (err) { console.error(err); }
 });
 
-// --- HISTORIAN NÄYTTÄMINEN RYHMITELTYNÄ ---
-
+// --- 3. HISTORIA ---
 onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (snapshot) => {
     logsContainer.innerHTML = '';
-    const workouts = {}; // Tähän ryhmitellään data workoutId:n mukaan
+    const workouts = {}; 
 
     snapshot.forEach((doc) => {
         const data = doc.data();
         const id = doc.id;
-        const wId = data.workoutId || 'legacy'; // Vanhat merkinnät ilman ID:tä
-        
+        const wId = data.workoutId || 'legacy';
         if (!workouts[wId]) {
             workouts[wId] = {
-                date: data.createdAt?.toDate().toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }) || 'Hetki sitten',
+                date: data.createdAt?.toDate().toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' }) || '...',
                 entries: []
             };
         }
         workouts[wId].entries.push({ id, ...data });
     });
 
-    // Luodaan visuaaliset treenikortit
-    for (const wId in workouts) {
+    Object.keys(workouts).forEach(wId => {
         const workout = workouts[wId];
-        const workoutCard = document.createElement('div');
-        workoutCard.className = 'workout-card';
-        
-        let entriesHtml = workout.entries.map(entry => `
+        const card = document.createElement('div');
+        card.className = 'workout-card';
+        if (wId === currentWorkoutId) card.style.borderLeft = '4px solid var(--primary)';
+
+        const entriesHtml = workout.entries.map(entry => `
             <div class="entry-row">
                 <div class="entry-main">
-                    <strong>${entry.exercise}</strong>: ${entry.sets}x${entry.reps} @ ${entry.weights}kg 
+                    <strong>${entry.exercise}</strong> ${entry.sets}x${entry.reps} @ ${entry.weights}kg 
                     ${entry.failure ? '<span class="fail-badge">FAIL</span>' : ''}
                 </div>
-                <div class="entry-actions">
-                    <button onclick="deleteEntry('${entry.id}')" class="btn-delete">❌</button>
-                </div>
+                <button onclick="deleteEntry('${entry.id}')" class="btn-delete">❌</button>
             </div>
         `).join('');
 
-        workoutCard.innerHTML = `
-            <div class="workout-header">${workout.date}</div>
-            <div class="workout-body">${entriesHtml}</div>
-        `;
-        logsContainer.appendChild(workoutCard);
-    }
+        card.innerHTML = `<div class="workout-header">${workout.date}</div><div class="workout-body">${entriesHtml}</div>`;
+        logsContainer.appendChild(card);
+    });
+
+    const exNames = [...new Set(snapshot.docs.map(d => d.data().exercise))];
+    datalist.innerHTML = exNames.map(n => `<option value="${n.charAt(0).toUpperCase() + n.slice(1)}">`).join('');
 });
 
-// Poistofunktio (globaali jotta onclick löytää sen)
 window.deleteEntry = async (id) => {
-    if(confirm("Poistetaanko tämä liike?")) {
-        await deleteDoc(doc(db, "gymEntries", id));
-    }
+    if(confirm("Poistetaanko?")) await deleteDoc(doc(db, "gymEntries", id));
 };
