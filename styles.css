@@ -18,13 +18,14 @@ body {
     color: var(--text);
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
+    min-height: 100vh;
 }
 
 .container { max-width: 600px; margin: 0 auto; padding: 0 20px 60px; }
 
 /* --- NAVIGAATIO --- */
 .top-nav {
-    background: rgba(15, 23, 42, 0.8);
+    background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -34,56 +35,19 @@ body {
     margin-bottom: 30px;
 }
 
-.nav-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-.brand { font-size: 0.8rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1px; }
+.nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto; padding: 0 20px; }
+.brand { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1px; }
 .brand strong { color: var(--primary); }
-
 .nav-links { display: flex; gap: 5px; }
-.nav-btn {
-    background: transparent;
-    color: var(--text-muted);
-    border: none;
-    padding: 8px 12px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    border-radius: 8px;
-    cursor: pointer;
-}
+.nav-btn { background: transparent; color: var(--text-muted); border: none; padding: 8px 12px; font-size: 0.75rem; font-weight: 700; border-radius: 8px; cursor: pointer; }
 .nav-btn.active { color: var(--primary); background: rgba(56, 189, 248, 0.1); }
 
 /* --- KORTIT --- */
-.card { 
-    background: var(--card); 
-    padding: 24px; 
-    border-radius: var(--radius); 
-    border: 1px solid var(--border); 
-    margin-bottom: 20px;
-    backdrop-filter: blur(10px);
-}
+.card { background: var(--card); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 20px; backdrop-filter: blur(10px); }
+.hero-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%); border-left: 4px solid var(--primary); }
 
-.hero-card {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%);
-    border-left: 4px solid var(--primary);
-}
-
-h1 {
-    font-size: 2.2rem;
-    font-weight: 800;
-    background: linear-gradient(to right, #38bdf8, #818cf8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 5px;
-}
-
-h3 { text-transform: uppercase; font-size: 0.75rem; color: var(--primary); letter-spacing: 1px; margin-bottom: 15px; }
+h1 { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+h3 { text-transform: uppercase; font-size: 0.7rem; color: var(--primary); letter-spacing: 1.5px; margin-bottom: 15px; }
 
 .cv-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
 @media (min-width: 500px) { .cv-grid { grid-template-columns: 1fr 1fr; } }
@@ -91,17 +55,16 @@ h3 { text-transform: uppercase; font-size: 0.75rem; color: var(--primary); lette
 .tech-stack { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
 .tag { background: #0f172a; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; color: var(--primary); border: 1px solid var(--border); font-weight: 700; }
 
-/* --- GYM LOG UI --- */
+/* --- GYM UI --- */
 .action-bar { margin-bottom: 20px; }
 .btn-primary { background: var(--primary); color: #0f172a; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
 .btn-success { background: var(--success); color: white; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
-.btn-add { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 12px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
+.btn-add { background: transparent; border: 2px solid var(--primary); color: var(--primary); padding: 14px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; }
 
 .form-group { margin-bottom: 15px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 5px; display: block; }
+label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; display: block; text-transform: uppercase; }
 input { background: #0f172a; border: 1px solid var(--border); border-radius: 10px; padding: 12px; color: white; width: 100%; font-size: 1rem; }
-
 .checkbox-group { display: flex; align-items: center; gap: 10px; margin: 10px 0; cursor: pointer; font-size: 0.9rem; }
 
 /* --- TREENIKORTIT --- */
@@ -109,12 +72,19 @@ input { background: #0f172a; border: 1px solid var(--border); border-radius: 10p
 .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-.workout-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; }
-.workout-header { background: rgba(51, 65, 85, 0.4); padding: 10px 15px; font-size: 0.7rem; font-weight: 800; color: var(--primary); }
+.workout-card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 15px; overflow: hidden; transition: 0.3s; }
+.workout-header { background: rgba(51, 65, 85, 0.4); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+.workout-title { font-size: 0.75rem; font-weight: 800; color: var(--primary); }
+.workout-meta { font-size: 0.75rem; font-weight: 800; color: var(--success); }
+.time-stamp { font-size: 0.65rem; color: var(--text-muted); font-weight: 400; margin-left: 5px; }
+
 .workout-body { padding: 5px 15px; }
-.entry-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.entry-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
 .entry-row:last-child { border-bottom: none; }
-.entry-main { font-size: 0.95rem; }
+.entry-main { font-size: 0.9rem; }
+.entry-vol { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
 .fail-badge { color: var(--danger); font-size: 0.6rem; font-weight: 900; border: 1px solid var(--danger); padding: 1px 4px; border-radius: 4px; margin-left: 5px; }
-.btn-delete { background: transparent; border: none; cursor: pointer; opacity: 0.4; transition: 0.2s; }
-.btn-delete:hover { opacity: 1; }
+.actions { display: flex; gap: 10px; }
+.btn-delete, .btn-edit { background: transparent; border: none; cursor: pointer; opacity: 0.3; transition: 0.2s; font-size: 1rem; }
+.btn-delete:hover, .btn-edit:hover { opacity: 1; }

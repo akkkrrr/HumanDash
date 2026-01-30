@@ -1,9 +1,9 @@
 import { db } from './firebase.js';
 import { 
-    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, setDoc, updateDoc 
+    collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, doc, setDoc, updateDoc, getDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- 1. NAVIGOINTI (Pysyy samana) ---
+// --- 1. NAVIGOINTI ---
 const navBtns = document.querySelectorAll('.nav-btn');
 const tabs = document.querySelectorAll('.tab-content');
 
@@ -19,18 +19,22 @@ navBtns.forEach(btn => {
     });
 });
 
-// --- 2. SALI-LOGIIKKA (Uudistettu data-malli) ---
+// --- 2. SALI-LOGIIKKA ---
 const gymForm = document.getElementById('gym-form');
 const logsContainer = document.getElementById('logs-container');
 const gymSection = document.getElementById('gym-section');
 const actionDiv = document.getElementById('gym-action-bar');
+const formTitle = document.getElementById('form-title');
+const entryIdField = document.getElementById('entry-id');
+const submitBtn = document.getElementById('submit-btn');
+const datalist = document.getElementById('exercise-helpers');
 
 const startBtn = document.createElement('button');
 startBtn.textContent = '➕ ALOITA UUSI TREENI';
 startBtn.className = 'btn-primary';
 
 const saveBtn = document.createElement('button');
-saveBtn.textContent = '✅ PÄÄTÄ TREENI JA TALLENNA';
+saveBtn.textContent = '✅ PÄÄTÄ TREENI';
 saveBtn.className = 'btn-success';
 saveBtn.style.display = 'none';
 
@@ -39,83 +43,74 @@ actionDiv.appendChild(saveBtn);
 
 let currentWorkoutId = null;
 
-// ALOITA TREENI: Luodaan uusi workout-dokumentti
+// Aloitus: Luo workout-dokumentin
 startBtn.addEventListener('click', async () => {
     const workoutRef = doc(collection(db, "workouts"));
     currentWorkoutId = workoutRef.id;
-
-    await setDoc(workoutRef, {
-        startedAt: serverTimestamp(),
-        status: 'ongoing',
-        totalVolume: 0
-    });
-
+    await setDoc(workoutRef, { startedAt: serverTimestamp(), status: 'ongoing' });
     gymSection.style.display = 'block';
     startBtn.style.display = 'none';
     saveBtn.style.display = 'block';
 });
 
-// PÄÄTÄ TREENI: Finalisoidaan workout-dokumentti
+// Lopetus: Finalisoi
 saveBtn.addEventListener('click', async () => {
     if(currentWorkoutId) {
-        const workoutRef = doc(db, "workouts", currentWorkoutId);
-        await updateDoc(workoutRef, {
-            status: 'completed',
-            endedAt: serverTimestamp()
-        });
+        await updateDoc(doc(db, "workouts", currentWorkoutId), { status: 'completed', endedAt: serverTimestamp() });
     }
     currentWorkoutId = null;
     gymSection.style.display = 'none';
     saveBtn.style.display = 'none';
     startBtn.style.display = 'block';
+    resetForm();
 });
 
-// LISÄÄ LIIKE: Lasketaan volyymi ja tallennetaan siisti nimi
+// TALLENNUS TAI PÄIVITYS
 gymForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    const id = entryIdField.value;
     const rawName = document.getElementById('exercise').value.trim();
-    // Siisti nimi (Esim. "penkki" -> "Penkki")
     const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-    
     const sets = parseInt(document.getElementById('sets').value);
     const reps = parseInt(document.getElementById('reps').value);
     const weightsStr = document.getElementById('weights').value;
     const failure = document.getElementById('failure').checked;
 
-    // VOLYYMIN LASKENTA (Kohta 1)
-    const weightsArray = weightsStr.split(',').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
-    let calculatedVolume = 0;
+    // Volyymin laskenta
+    const wArr = weightsStr.split(',').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
+    const vol = wArr.length === 1 ? sets * reps * wArr[0] : reps * wArr.reduce((a,b) => a+b, 0);
 
-    if (weightsArray.length === 1) {
-        calculatedVolume = sets * reps * weightsArray[0];
-    } else {
-        // Jos painoja on annettu lista, lasketaan ne yhteen ja kerrotaan toistoilla
-        const weightsSum = weightsArray.reduce((a, b) => a + b, 0);
-        calculatedVolume = reps * weightsSum;
-        
-        // Validointi (Kohta 1)
-        if(weightsArray.length !== sets) {
-            console.warn("Sarjojen määrä ja annettujen painojen määrä ei täsmää.");
-        }
-    }
+    const entryData = {
+        exercise: displayName,
+        exerciseKey: rawName.toLowerCase(),
+        sets, reps, weights: weightsStr, failure,
+        volume: vol,
+        updatedAt: serverTimestamp()
+    };
 
     try {
-        await addDoc(collection(db, "gymEntries"), {
-            workoutId: currentWorkoutId,
-            exercise: displayName, // Tallenna siisti nimi (Kohta 2)
-            exerciseKey: rawName.toLowerCase(), // Hakua varten (Kohta 2)
-            sets, reps, weights: weightsStr, failure,
-            volume: calculatedVolume, // Tallenna volyymi heti (Kohta 1)
-            createdAt: serverTimestamp()
-        });
-        
-        gymForm.reset();
-        document.getElementById('exercise').focus();
-    } catch (err) { console.error(err); }
+        if (id) {
+            await updateDoc(doc(db, "gymEntries", id), entryData);
+        } else {
+            await addDoc(collection(db, "gymEntries"), {
+                ...entryData,
+                workoutId: currentWorkoutId,
+                createdAt: serverTimestamp()
+            });
+        }
+        resetForm();
+    } catch (err) { console.error("Tallennusvirhe:", err); }
 });
 
-// --- 3. HISTORIAN NÄYTTÄMINEN (Sama ryhmittely, mutta volyymi mukana) ---
+function resetForm() {
+    gymForm.reset();
+    entryIdField.value = '';
+    formTitle.textContent = 'Kirjaa liike';
+    submitBtn.textContent = 'Lisää liike treeniin';
+}
+
+// --- 3. REAALIAIKAINEN HISTORIA ---
 onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (snapshot) => {
     logsContainer.innerHTML = '';
     const workouts = {}; 
@@ -126,8 +121,10 @@ onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (s
         const wId = data.workoutId || 'legacy';
         
         if (!workouts[wId]) {
+            const dateObj = data.createdAt?.toDate() || new Date();
             workouts[wId] = {
-                date: data.createdAt?.toDate().toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' }) || '...',
+                date: dateObj.toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' }),
+                time: dateObj.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' }),
                 entries: [],
                 totalVol: 0
             };
@@ -137,33 +134,59 @@ onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (s
     });
 
     Object.keys(workouts).forEach(wId => {
-        const workout = workouts[wId];
+        const w = workouts[wId];
         const card = document.createElement('div');
         card.className = 'workout-card';
-        if (wId === currentWorkoutId) card.classList.add('active-workout');
+        if (wId === currentWorkoutId) card.style.borderLeft = '4px solid var(--primary)';
 
-        const entriesHtml = workout.entries.map(entry => `
+        const entriesHtml = w.entries.map(e => `
             <div class="entry-row">
                 <div class="entry-main">
-                    <strong>${entry.exercise}</strong> ${entry.sets}x${entry.reps} @ ${entry.weights}kg 
-                    ${entry.failure ? '<span class="fail-badge">FAIL</span>' : ''}
+                    <strong>${e.exercise}</strong> ${e.sets}x${e.reps} @ ${e.weights}kg
+                    ${e.failure ? '<span class="fail-badge">FAIL</span>' : ''}
+                    <div class="entry-vol">${e.volume} kg volyymi</div>
                 </div>
-                <div style="font-size: 0.7rem; color: var(--text-muted)">${entry.volume} kg vol.</div>
-                <button onclick="deleteEntry('${entry.id}')" class="btn-delete">❌</button>
+                <div class="actions">
+                    <button onclick="editEntry('${e.id}')" class="btn-edit">✏️</button>
+                    <button onclick="deleteEntry('${e.id}')" class="btn-delete">❌</button>
+                </div>
             </div>
         `).join('');
 
         card.innerHTML = `
             <div class="workout-header">
-                <span>${workout.date}</span>
-                <span style="float: right;">Yhteensä: ${workout.totalVol} kg</span>
+                <div class="workout-title">${w.date} <span class="time-stamp">klo ${w.time}</span></div>
+                <div class="workout-meta">${w.totalVol} kg</div>
             </div>
             <div class="workout-body">${entriesHtml}</div>
         `;
         logsContainer.appendChild(card);
     });
+
+    // Autocomplete
+    const exNames = [...new Set(snapshot.docs.map(d => d.data().exercise))];
+    datalist.innerHTML = exNames.map(n => `<option value="${n}">`).join('');
 });
 
+// GLOBAALIT FUNKTIOT
 window.deleteEntry = async (id) => {
-    if(confirm("Poistetaanko liike?")) await deleteDoc(doc(db, "gymEntries", id));
+    if(confirm("Poistetaanko tämä liike?")) await deleteDoc(doc(db, "gymEntries", id));
+};
+
+window.editEntry = async (id) => {
+    const docSnap = await getDoc(doc(db, "gymEntries", id));
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById('exercise').value = data.exercise;
+        document.getElementById('sets').value = data.sets;
+        document.getElementById('reps').value = data.reps;
+        document.getElementById('weights').value = data.weights;
+        document.getElementById('failure').checked = data.failure;
+        entryIdField.value = id;
+        
+        gymSection.style.display = 'block';
+        formTitle.textContent = 'Muokkaa liikettä';
+        submitBtn.textContent = 'Päivitä liike';
+        gymSection.scrollIntoView({ behavior: 'smooth' });
+    }
 };

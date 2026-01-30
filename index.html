@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Dashboard</title>
+    <title>Human Dashboard | Personal OS</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
@@ -31,22 +31,21 @@
                     <span class="tag">JavaScript (ES6+)</span>
                     <span class="tag">Firebase</span>
                     <span class="tag">Vercel</span>
-                    <span class="tag">GitHub</span>
+                    <span class="tag">UI/UX Design</span>
                 </div>
             </div>
 
             <div class="cv-grid">
                 <div class="card">
-                    <h3>Esittely</h3>
-                    <p>Rakennan työkaluja, jotka parantavat suorituskykyä. Tämä Dashboard yhdistää koodauksen ja elämänhallinnan.</p>
+                    <h3>Profiili</h3>
+                    <p>Rakennan työkaluja, jotka muuttavat datan ymmärrettäväksi toiminnaksi. Tämä dashboard on jatkuvasti kehittyvä koodiprojekti.</p>
                 </div>
-                
                 <div class="card">
-                    <h3>Projektit</h3>
+                    <h3>Työkalut</h3>
                     <ul class="project-list">
-                        <li><strong>Gym Log</strong> – Treenidatan hallinta</li>
-                        <li><strong>Notebook Calendar</strong> – Ajanhallinta</li>
-                        <li><strong>Shared Task List</strong> – Tiimityöskentely</li>
+                        <li><strong>Gym Engine</strong> – Vahva volyymiseuranta</li>
+                        <li><strong>Notebook Cal</strong> – Rakenteellinen kalenteri</li>
+                        <li><strong>Vibe Check</strong> – Mentaalinen data (Tulossa)</li>
                     </ul>
                 </div>
             </div>
@@ -56,11 +55,13 @@
             <div id="gym-action-bar" class="action-bar"></div>
             
             <section id="gym-section" class="card" style="display: none;">
-                <h2>Kirjaa liike</h2>
+                <h2 id="form-title">Kirjaa liike</h2>
                 <form id="gym-form">
+                    <input type="hidden" id="entry-id">
+                    
                     <div class="form-group">
                         <label>Liikkeen nimi</label>
-                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Penkkipunnerrus" required autocomplete="off">
+                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Maastaveto" required autocomplete="off">
                         <datalist id="exercise-helpers"></datalist>
                     </div>
                     
@@ -77,28 +78,26 @@
 
                     <div class="form-group">
                         <label>Painot (kg)</label>
-                        <input type="text" id="weights" placeholder="Esim. 60, 60, 65" required>
-                        <small style="color: var(--text-muted); font-size: 0.7rem;">Erota sarjat pilkulla.</small>
+                        <input type="text" id="weights" placeholder="Esim. 100 tai 100, 105, 110" required>
                     </div>
 
                     <label class="checkbox-group">
                         <input type="checkbox" id="failure">
-                        <span>Sarja tehty failureen?</span>
+                        <span>Failureen asti?</span>
                     </label>
 
-                    <button type="submit" class="btn-add">Lisää liike treeniin</button>
+                    <button type="submit" id="submit-btn" class="btn-add">Lisää liike treeniin</button>
                 </form>
             </section>
 
-            <div id="logs-container">
-                </div>
+            <div id="logs-container"></div>
         </section>
 
         <section id="vibe-tab" class="tab-content">
-            <div class="card"><h3>Vibe Tracker</h3><p>Tulossa pian...</p></div>
+            <div class="card"><h3>Vibe Tracker</h3><p>Coming soon: Mieliala ja vitamiinit.</p></div>
         </section>
         <section id="data-tab" class="tab-content">
-            <div class="card"><h3>Health Data</h3><p>Tulossa pian...</p></div>
+            <div class="card"><h3>Deep Analytics</h3><p>Coming soon: Garmin & Painokäyrät.</p></div>
         </section>
 
     </main>
