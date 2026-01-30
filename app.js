@@ -24,169 +24,230 @@ const gymForm = document.getElementById('gym-form');
 const logsContainer = document.getElementById('logs-container');
 const gymSection = document.getElementById('gym-section');
 const actionDiv = document.getElementById('gym-action-bar');
-const formTitle = document.getElementById('form-title');
-const entryIdField = document.getElementById('entry-id');
-const submitBtn = document.getElementById('submit-btn');
+const summaryCard = document.getElementById('workout-summary-card');
+const notesInput = document.getElementById('workout-notes');
+const finalSaveBtn = document.getElementById('final-save-btn');
 const datalist = document.getElementById('exercise-helpers');
+
+let currentWorkoutId = null;
 
 const startBtn = document.createElement('button');
 startBtn.textContent = '➕ ALOITA UUSI TREENI';
 startBtn.className = 'btn-primary';
 
-const saveBtn = document.createElement('button');
-saveBtn.textContent = '✅ PÄÄTÄ TREENI';
-saveBtn.className = 'btn-success';
-saveBtn.style.display = 'none';
+const finishBtn = document.createElement('button');
+finishBtn.textContent = '🏁 LOPETA TREENI';
+finishBtn.className = 'btn-success';
+finishBtn.style.display = 'none';
 
 actionDiv.appendChild(startBtn);
-actionDiv.appendChild(saveBtn);
+actionDiv.appendChild(finishBtn);
 
-let currentWorkoutId = null;
-
-// Aloitus: Luo workout-dokumentin
+// Aloita treeni
 startBtn.addEventListener('click', async () => {
     const workoutRef = doc(collection(db, "workouts"));
     currentWorkoutId = workoutRef.id;
-    await setDoc(workoutRef, { startedAt: serverTimestamp(), status: 'ongoing' });
+    await setDoc(workoutRef, { startedAt: serverTimestamp(), status: 'ongoing', totalVolume: 0 });
     gymSection.style.display = 'block';
+    finishBtn.style.display = 'block';
     startBtn.style.display = 'none';
-    saveBtn.style.display = 'block';
 });
 
-// Lopetus: Finalisoi
-saveBtn.addEventListener('click', async () => {
+// Lopeta treeni - Avaa muistiinpanot
+finishBtn.addEventListener('click', () => {
+    summaryCard.style.display = 'block';
+    gymSection.style.display = 'none';
+    finishBtn.style.display = 'none';
+    summaryCard.scrollIntoView({ behavior: 'smooth' });
+});
+
+// Tallenna muistiinpanot ja sulje workout
+finalSaveBtn.addEventListener('click', async () => {
     if(currentWorkoutId) {
-        await updateDoc(doc(db, "workouts", currentWorkoutId), { status: 'completed', endedAt: serverTimestamp() });
+        await updateDoc(doc(db, "workouts", currentWorkoutId), {
+            status: 'completed',
+            endedAt: serverTimestamp(),
+            notes: notesInput.value.trim()
+        });
     }
     currentWorkoutId = null;
-    gymSection.style.display = 'none';
-    saveBtn.style.display = 'none';
+    summaryCard.style.display = 'none';
     startBtn.style.display = 'block';
-    resetForm();
+    notesInput.value = '';
+    gymForm.reset();
 });
 
-// TALLENNUS TAI PÄIVITYS
+// Liikkeen tallennus (Sisältää puolipiste-logiikan)
 gymForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const id = entryIdField.value;
+    const id = document.getElementById('entry-id').value;
     const rawName = document.getElementById('exercise').value.trim();
-    const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
     const sets = parseInt(document.getElementById('sets').value);
     const reps = parseInt(document.getElementById('reps').value);
     const weightsStr = document.getElementById('weights').value;
-    const failure = document.getElementById('failure').checked;
 
-    // Volyymin laskenta
-    const wArr = weightsStr.split(',').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
-    const vol = wArr.length === 1 ? sets * reps * wArr[0] : reps * wArr.reduce((a,b) => a+b, 0);
+    // Puolipiste-logiikka & pilkku desimaaliksi
+    const weightsArray = weightsStr.replace(/,/g, '.').split(';').map(w => parseFloat(w.trim())).filter(w => !isNaN(w));
+    
+    let vol = 0;
+    if (weightsArray.length === 1) {
+        vol = sets * reps * weightsArray[0];
+    } else {
+        vol = reps * weightsArray.reduce((a, b) => a + b, 0);
+    }
 
-    const entryData = {
-        exercise: displayName,
-        exerciseKey: rawName.toLowerCase(),
-        sets, reps, weights: weightsStr, failure,
+    const data = {
+        exercise: rawName.charAt(0).toUpperCase() + rawName.slice(1),
+        sets, reps, weights: weightsStr,
         volume: vol,
+        failure: document.getElementById('failure').checked,
         updatedAt: serverTimestamp()
     };
 
     try {
         if (id) {
-            await updateDoc(doc(db, "gymEntries", id), entryData);
+            await updateDoc(doc(db, "gymEntries", id), data);
         } else {
             await addDoc(collection(db, "gymEntries"), {
-                ...entryData,
+                ...data,
                 workoutId: currentWorkoutId,
                 createdAt: serverTimestamp()
             });
         }
         resetForm();
-    } catch (err) { console.error("Tallennusvirhe:", err); }
+        document.getElementById('exercise').focus();
+    } catch (err) { console.error(err); }
 });
 
 function resetForm() {
     gymForm.reset();
-    entryIdField.value = '';
-    formTitle.textContent = 'Kirjaa liike';
-    submitBtn.textContent = 'Lisää liike treeniin';
+    document.getElementById('entry-id').value = '';
+    document.getElementById('form-title').textContent = 'Kirjaa liike';
+    document.getElementById('submit-btn').textContent = 'Lisää liike';
 }
 
-// --- 3. REAALIAIKAINEN HISTORIA ---
-onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), (snapshot) => {
-    logsContainer.innerHTML = '';
-    const workouts = {}; 
-
-    snapshot.forEach((doc) => {
-        const data = doc.data();
-        const id = doc.id;
-        const wId = data.workoutId || 'legacy';
-        
-        if (!workouts[wId]) {
-            const dateObj = data.createdAt?.toDate() || new Date();
-            workouts[wId] = {
-                date: dateObj.toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric' }),
-                time: dateObj.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' }),
-                entries: [],
-                totalVol: 0
+// --- 3. RENDEROINTI (XSS-suojattu) ---
+onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", "desc")), async (snapshot) => {
+    // Haetaan samalla workout-dokumentit muistiinpanoja varten
+    const workoutGroups = {};
+    
+    snapshot.forEach(doc => {
+        const d = doc.data();
+        const wId = d.workoutId || 'legacy';
+        if (!workoutGroups[wId]) {
+            workoutGroups[wId] = { 
+                entries: [], 
+                totalVol: 0, 
+                date: d.createdAt?.toDate(),
+                notes: '' 
             };
         }
-        workouts[wId].entries.push({ id, ...data });
-        workouts[wId].totalVol += (data.volume || 0);
+        workoutGroups[wId].entries.push({ id: doc.id, ...d });
+        workoutGroups[wId].totalVol += (d.volume || 0);
     });
 
-    Object.keys(workouts).forEach(wId => {
-        const w = workouts[wId];
+    logsContainer.innerHTML = '';
+
+    for (const wId of Object.keys(workoutGroups)) {
+        const group = workoutGroups[wId];
+        
+        // Haetaan muistiinpanot kerran per workout
+        if (wId !== 'legacy') {
+            const wDoc = await getDoc(doc(db, "workouts", wId));
+            if(wDoc.exists()) group.notes = wDoc.data().notes || '';
+        }
+
         const card = document.createElement('div');
         card.className = 'workout-card';
-        if (wId === currentWorkoutId) card.style.borderLeft = '4px solid var(--primary)';
+        if(wId === currentWorkoutId) card.classList.add('active-workout-card');
 
-        const entriesHtml = w.entries.map(e => `
-            <div class="entry-row">
-                <div class="entry-main">
-                    <strong>${e.exercise}</strong> ${e.sets}x${e.reps} @ ${e.weights}kg
-                    ${e.failure ? '<span class="fail-badge">FAIL</span>' : ''}
-                    <div class="entry-vol">${e.volume} kg volyymi</div>
-                </div>
-                <div class="actions">
-                    <button onclick="editEntry('${e.id}')" class="btn-edit">✏️</button>
-                    <button onclick="deleteEntry('${e.id}')" class="btn-delete">❌</button>
-                </div>
+        // Header
+        const header = document.createElement('div');
+        header.className = 'workout-header';
+        header.innerHTML = `
+            <div class="workout-title">
+                ${group.date ? group.date.toLocaleDateString('fi-FI') : 'Hetki sitten'}
+                ${wId === currentWorkoutId ? '<span class="ongoing-badge">ONGOING</span>' : ''}
             </div>
-        `).join('');
-
-        card.innerHTML = `
-            <div class="workout-header">
-                <div class="workout-title">${w.date} <span class="time-stamp">klo ${w.time}</span></div>
-                <div class="workout-meta">${w.totalVol} kg</div>
-            </div>
-            <div class="workout-body">${entriesHtml}</div>
+            <div class="workout-meta">${group.totalVol} kg</div>
         `;
-        logsContainer.appendChild(card);
-    });
+        card.appendChild(header);
 
-    // Autocomplete
-    const exNames = [...new Set(snapshot.docs.map(d => d.data().exercise))];
-    datalist.innerHTML = exNames.map(n => `<option value="${n}">`).join('');
+        // Body
+        const body = document.createElement('div');
+        body.className = 'workout-body';
+
+        group.entries.forEach(e => {
+            const row = document.createElement('div');
+            row.className = 'entry-row';
+            
+            const info = document.createElement('div');
+            info.className = 'entry-main';
+            
+            const name = document.createElement('strong');
+            name.textContent = e.exercise;
+            
+            const details = document.createElement('span');
+            details.textContent = ` ${e.sets}x${e.reps} @ ${e.weights}kg`;
+            
+            info.appendChild(name);
+            info.appendChild(details);
+
+            if(e.failure) {
+                const badge = document.createElement('span');
+                badge.className = 'fail-badge';
+                badge.textContent = 'FAIL';
+                info.appendChild(badge);
+            }
+
+            const volDiv = document.createElement('div');
+            volDiv.className = 'entry-vol';
+            volDiv.textContent = `${e.volume} kg volyymi`;
+            info.appendChild(volDiv);
+
+            const actions = document.createElement('div');
+            actions.className = 'actions';
+            actions.innerHTML = `<button class="btn-edit">✏️</button><button class="btn-delete">❌</button>`;
+            
+            actions.querySelector('.btn-edit').onclick = () => editEntry(e.id);
+            actions.querySelector('.btn-delete').onclick = () => deleteEntry(e.id);
+
+            row.appendChild(info);
+            row.appendChild(actions);
+            body.appendChild(row);
+        });
+
+        card.appendChild(body);
+        
+        // Muistiinpanot
+        if (group.notes) {
+            const notesDiv = document.createElement('div');
+            notesDiv.className = 'workout-notes-display';
+            notesDiv.textContent = `Note: ${group.notes}`;
+            card.appendChild(notesDiv);
+        }
+
+        logsContainer.appendChild(card);
+    }
 });
 
-// GLOBAALIT FUNKTIOT
-window.deleteEntry = async (id) => {
-    if(confirm("Poistetaanko tämä liike?")) await deleteDoc(doc(db, "gymEntries", id));
-};
-
+// Globaalit
 window.editEntry = async (id) => {
-    const docSnap = await getDoc(doc(db, "gymEntries", id));
-    if (docSnap.exists()) {
-        const data = docSnap.data();
-        document.getElementById('exercise').value = data.exercise;
-        document.getElementById('sets').value = data.sets;
-        document.getElementById('reps').value = data.reps;
-        document.getElementById('weights').value = data.weights;
-        document.getElementById('failure').checked = data.failure;
-        entryIdField.value = id;
-        
+    const s = await getDoc(doc(db, "gymEntries", id));
+    if(s.exists()) {
+        const d = s.data();
+        document.getElementById('exercise').value = d.exercise;
+        document.getElementById('sets').value = d.sets;
+        document.getElementById('reps').value = d.reps;
+        document.getElementById('weights').value = d.weights;
+        document.getElementById('failure').checked = d.failure;
+        document.getElementById('entry-id').value = id;
         gymSection.style.display = 'block';
-        formTitle.textContent = 'Muokkaa liikettä';
-        submitBtn.textContent = 'Päivitä liike';
+        document.getElementById('form-title').textContent = 'Muokkaa liikettä';
+        document.getElementById('submit-btn').textContent = 'Päivitä liike';
         gymSection.scrollIntoView({ behavior: 'smooth' });
     }
 };
+
+window.deleteEntry = async (id) => { if(confirm("Poistetaanko?")) await deleteDoc(doc(db, "gymEntries", id)); };

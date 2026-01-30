@@ -31,21 +31,21 @@
                     <span class="tag">JavaScript (ES6+)</span>
                     <span class="tag">Firebase</span>
                     <span class="tag">Vercel</span>
-                    <span class="tag">UI/UX Design</span>
+                    <span class="tag">GitHub</span>
                 </div>
             </div>
 
             <div class="cv-grid">
                 <div class="card">
                     <h3>Profiili</h3>
-                    <p>Rakennan työkaluja, jotka muuttavat datan ymmärrettäväksi toiminnaksi. Tämä dashboard on jatkuvasti kehittyvä koodiprojekti.</p>
+                    <p>Rakennan työkaluja, jotka parantavat suorituskykyä. Tämä Dashboard yhdistää koodauksen ja elämänhallinnan.</p>
                 </div>
                 <div class="card">
-                    <h3>Työkalut</h3>
+                    <h3>Projektit</h3>
                     <ul class="project-list">
-                        <li><strong>Gym Engine</strong> – Vahva volyymiseuranta</li>
-                        <li><strong>Notebook Cal</strong> – Rakenteellinen kalenteri</li>
-                        <li><strong>Vibe Check</strong> – Mentaalinen data (Tulossa)</li>
+                        <li><strong>Gym Engine</strong> – Volyymianalytiikka</li>
+                        <li><strong>Notebook Calendar</strong> – Ajanhallinta</li>
+                        <li><strong>Task Matrix</strong> – Priorisointi</li>
                     </ul>
                 </div>
             </div>
@@ -54,39 +54,36 @@
         <section id="gym-tab" class="tab-content">
             <div id="gym-action-bar" class="action-bar"></div>
             
+            <div id="workout-summary-card" class="card" style="display: none; border-top: 4px solid var(--success);">
+                <h3>Päätä treeni</h3>
+                <div class="form-group">
+                    <label>Treenin muistiinpanot (fiilis, kesto, huomiot)</label>
+                    <input type="text" id="workout-notes" placeholder="Esim. Kulki hyvin, 60min...">
+                </div>
+                <button id="final-save-btn" class="btn-success">TALLENNA JA ARKISTOI</button>
+            </div>
+
             <section id="gym-section" class="card" style="display: none;">
                 <h2 id="form-title">Kirjaa liike</h2>
                 <form id="gym-form">
                     <input type="hidden" id="entry-id">
-                    
                     <div class="form-group">
-                        <label>Liikkeen nimi</label>
-                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Maastaveto" required autocomplete="off">
+                        <label>Liike</label>
+                        <input type="text" id="exercise" list="exercise-helpers" placeholder="Esim. Kyykky" required autocomplete="off">
                         <datalist id="exercise-helpers"></datalist>
                     </div>
-                    
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Sarjat</label>
-                            <input type="number" id="sets" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Toistot</label>
-                            <input type="number" id="reps" required>
-                        </div>
+                        <div class="form-group"><label>Sarjat</label><input type="number" id="sets" required></div>
+                        <div class="form-group"><label>Toistot</label><input type="number" id="reps" required></div>
                     </div>
-
                     <div class="form-group">
-                        <label>Painot (kg)</label>
-                        <input type="text" id="weights" placeholder="Esim. 100 tai 100, 105, 110" required>
+                        <label>Painot (kg) - <small>Käytä puolipistettä ; erottimena</small></label>
+                        <input type="text" id="weights" placeholder="Esim. 72,5; 75; 80" required>
                     </div>
-
                     <label class="checkbox-group">
-                        <input type="checkbox" id="failure">
-                        <span>Failureen asti?</span>
+                        <input type="checkbox" id="failure"> <span>Failureen asti?</span>
                     </label>
-
-                    <button type="submit" id="submit-btn" class="btn-add">Lisää liike treeniin</button>
+                    <button type="submit" id="submit-btn" class="btn-add">Lisää liike</button>
                 </form>
             </section>
 
@@ -94,10 +91,10 @@
         </section>
 
         <section id="vibe-tab" class="tab-content">
-            <div class="card"><h3>Vibe Tracker</h3><p>Coming soon: Mieliala ja vitamiinit.</p></div>
+            <div class="card"><h3>Vibe Tracker</h3><p>Tulossa: Päivittäinen fiilis ja vitamiinit.</p></div>
         </section>
         <section id="data-tab" class="tab-content">
-            <div class="card"><h3>Deep Analytics</h3><p>Coming soon: Garmin & Painokäyrät.</p></div>
+            <div class="card"><h3>Analytics</h3><p>Tulossa: Garmin-integraatio ja volyymikäyrät.</p></div>
         </section>
 
     </main>
