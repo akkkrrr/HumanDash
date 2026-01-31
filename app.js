@@ -16,7 +16,7 @@ navBtns.forEach(btn => {
     });
 });
 
-// --- GYM ---
+// --- GYM ELEMENTIT ---
 const gymForm = document.getElementById('gym-form');
 const logsContainer = document.getElementById('logs-container');
 const gymSection = document.getElementById('gym-section');
@@ -41,6 +41,7 @@ finishBtn.style.display = 'none';
 actionDiv.appendChild(startBtn);
 actionDiv.appendChild(finishBtn);
 
+// TREENIN HALLINTA
 startBtn.onclick = async () => {
     const workoutRef = doc(collection(db, "workouts"));
     currentWorkoutId = workoutRef.id;
@@ -72,12 +73,13 @@ finalSaveBtn.onclick = async () => {
 };
 
 discardWorkoutBtn.onclick = async () => {
-    if(currentWorkoutId && confirm("Poistetaanko tyhjä treeni?")) {
+    if(currentWorkoutId && confirm("Poistetaanko sessio?")) {
         await deleteDoc(doc(db, "workouts", currentWorkoutId));
         closeSession();
     }
 };
 
+// LOMAKE
 gymForm.onsubmit = async (e) => {
     e.preventDefault();
     const id = document.getElementById('entry-id').value;
@@ -93,7 +95,7 @@ gymForm.onsubmit = async (e) => {
     const data = { exercise: name, sets, reps, weights: wStr, volume: vol, failure: document.getElementById('failure').checked, updatedAt: serverTimestamp() };
 
     if (id) {
-        await updateDoc(doc(db, "gymEntries", id), data);
+        await updateDoc(doc(doc(db, "gymEntries", id)), data);
     } else {
         await addDoc(collection(db, "gymEntries"), { ...data, workoutId: currentWorkoutId, createdAt: serverTimestamp() });
     }
@@ -109,6 +111,7 @@ function resetForm() {
 }
 cancelEditBtn.onclick = resetForm;
 
+// HISTORIA
 function loadLogs(order = 'desc') {
     if (unsubscribeLogs) unsubscribeLogs();
     unsubscribeLogs = onSnapshot(query(collection(db, "gymEntries"), orderBy("createdAt", order)), (snapshot) => {
@@ -125,14 +128,13 @@ function loadLogs(order = 'desc') {
             const g = groups[wId];
             const card = document.createElement('div');
             card.className = 'workout-card';
-            card.innerHTML = `<div class="workout-header">${g.date.toLocaleDateString('fi-FI')} <small>v${g.vol}kg</small></div><div class="workout-body"></div>`;
+            card.innerHTML = `<div class="workout-header"><span>${g.date.toLocaleDateString('fi-FI')}</span> <span>${g.vol}kg</span></div><div class="workout-body"></div>`;
             const body = card.querySelector('.workout-body');
             g.entries.forEach(e => {
                 const row = document.createElement('div');
                 row.className = 'entry-row';
                 row.innerHTML = `<div><strong>${e.exercise}</strong><br><small>${e.sets}x${e.reps} @ ${e.weights}</small></div>
-                <div><button class="btn-icon" onclick="editEntry('${e.id}')">✏️</button>
-                <button class="btn-icon" onclick="deleteEntry('${e.id}')">❌</button></div>`;
+                <div><button class="btn-icon" onclick="editEntry('${e.id}')">✏️</button><button class="btn-icon" onclick="deleteEntry('${e.id}')">❌</button></div>`;
                 body.appendChild(row);
             });
             logsContainer.appendChild(card);

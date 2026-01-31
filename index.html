@@ -45,52 +45,34 @@
 
             <div class="card" style="border-top: 4px solid var(--primary);">
                 <h3>Intent & Current Focus</h3>
-                <p style="font-size: 0.9rem; margin-bottom: 12px;">
-                    Tämä on elävä käyttöjärjestelmä, jossa dokumentoin tapani ajatella, rakentaa ja iteroida – niin koodin kuin prosessien parissa.
-                </p>
+                <p style="font-size: 0.9rem; margin-bottom: 12px;">Tämä on elävä käyttöjärjestelmä, jossa dokumentoin tapani ajatella ja rakentaa.</p>
                 <ul class="project-list">
-                    <li><strong>Learning:</strong> Modernit web-teknologiat (Vercel, Firebase, JS) aidon käytön kautta.</li>
-                    <li><strong>Building:</strong> Järjestelmäkeskeiset työkalut, jotka kääntävät kaaoksen selkeäksi dataksi.</li>
-                    <li><strong>Goal:</strong> Tehtävät, joissa rakenteella, selkeydellä ja toimivuudella on väliä.</li>
+                    <li><strong>Learning:</strong> Modernit web-teknologiat (Vercel, Firebase, JS).</li>
+                    <li><strong>Building:</strong> Järjestelmäkeskeiset työkalut kaaoksen hallintaan.</li>
                 </ul>
             </div>
 
             <div class="cv-grid">
                 <div class="card wide-card">
                     <h3>Case #1: Startup GSM Operator</h3>
-                    <p class="case-desc">Kokonaisvaltaisen operatiivisen järjestelmän arkkitehtuuri.</p>
+                    <p class="case-desc">Operatiivisen järjestelmän arkkitehtuuri.</p>
                     <ul class="project-list">
-                        <li><strong>Infrastruktuuri:</strong> Tilaustietokantojen ja toimitusketjujen suunnittelu nollasta.</li>
-                        <li><strong>Optimointi:</strong> In-house asiakaspalvelun ja 24/7 päivystyslogiikan rakentaminen.</li>
+                        <li><strong>Infrastruktuuri:</strong> Tilaustietokannat ja toimitusketjut nollasta.</li>
                     </ul>
                 </div>
                 <div class="card">
                     <h3>Case #2: Call Center Lead</h3>
-                    <p class="case-desc">Prosessien ja ammattimaisuuden palauttaminen.</p>
-                    <ul class="project-list">
-                        <li><strong>Rakenne:</strong> Koulutusmateriaalit ja raportointimallit kriisiyhtiöön.</li>
-                    </ul>
+                    <p class="case-desc">Prosessien palauttaminen.</p>
                 </div>
                 <div class="card">
                     <h3>Case #3: Municipal Data Mapping</h3>
-                    <p class="case-desc">Kiinteistödatan verifiointi maastossa.</p>
-                    <ul class="project-list">
-                        <li><strong>Tarkkuus:</strong> Tuhansien rakennusten luokittelu ja datan siirto verottajalle.</li>
-                    </ul>
-                </div>
-                <div class="card wide-card" style="border-right: 4px solid var(--primary);">
-                    <h3>The Human Side: Structural Construction</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">
-                        Vastapainona digitaalisuudelle olen rakentanut omakotitaloja alusta loppuun.
-                    </p>
+                    <p class="case-desc">Kiinteistödatan verifiointi.</p>
                 </div>
             </div>
 
             <div class="card hero-card" style="margin-top: 30px; text-align: center;">
-                <h3>Kiinnostuitko järjestelmällisestä otteesta?</h3>
-                <div class="tech-stack" style="justify-content: center;">
-                    <span class="tag" style="padding: 10px 20px;">[SÄHKÖPOSTISI]</span>
-                </div>
+                <h3>Kiinnostuitko?</h3>
+                <p style="font-size: 0.8rem;">[SÄHKÖPOSTISI TÄHÄN]</p>
             </div>
         </section>
 
@@ -100,12 +82,12 @@
             <div id="workout-summary-card" class="card" style="display: none; border-top: 4px solid var(--success);">
                 <h3>Päätä treeni</h3>
                 <div class="form-group">
-                    <label>Treenin muistiinpanot</label>
+                    <label>Muistiinpanot</label>
                     <input type="text" id="workout-notes" placeholder="Miten kulki?">
                 </div>
                 <div class="form-row">
                     <button id="final-save-btn" class="btn-success">TALLENNA</button>
-                    <button id="discard-workout-btn" class="btn-danger-outline">POISTA TYHJÄNÄ</button>
+                    <button id="discard-workout-btn" class="btn-danger-outline">POISTA</button>
                 </div>
             </div>
 
@@ -119,14 +101,30 @@
                         <div class="form-group"><label>Toistot</label><input type="number" id="reps" required></div>
                     </div>
                     <div class="form-group"><label>Painot (kg) - Erottele ;</label><input type="text" id="weights" required></div>
-                    <label class="checkbox-group"><input type="checkbox" id="failure"> <span>Failure?</span></label>
+                    
+                    <div class="form-group">
+                        <label>Intensiteetti</label>
+                        <label class="failure-toggle">
+                            <input type="checkbox" id="failure">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">Failureen asti?</span>
+                        </label>
+                    </div>
+
                     <div class="form-row">
                         <button type="submit" id="submit-btn" class="btn-add">Lisää liike</button>
                         <button type="button" id="cancel-edit-btn" class="btn-cancel" style="display: none;">Peruuta</button>
                     </div>
                 </form>
             </section>
-            <div class="logs-header"><h3>Historia</h3><select id="sort-order" class="sort-select"><option value="desc">Uusin ensin</option><option value="asc">Vanhin ensin</option></select></div>
+
+            <div class="logs-header">
+                <h3>Historia</h3>
+                <select id="sort-order" class="sort-select">
+                    <option value="desc">Uusin ensin</option>
+                    <option value="asc">Vanhin ensin</option>
+                </select>
+            </div>
             <div id="logs-container"></div>
         </section>
 
@@ -143,15 +141,13 @@
             </div>
         </section>
 
-        <section id="vibe-tab" class="tab-content"><div class="card"><h3>Vibe Tracker</h3><p>In development.</p></div></section>
+        <section id="vibe-tab" class="tab-content"><div class="card"><h3>Vibe Tracker</h3><p>Tuloillaan...</p></div></section>
     </main>
 
     <footer class="tech-footer">
         <p>Built with <strong>Raw Logic & Vanilla JS</strong></p>
         <p>Hosted on <strong>Vercel</strong> • Database by <strong>Firebase</strong></p>
-        <div class="footer-links">
-            <a href="#" target="_blank">View Source on GitHub</a>
-        </div>
+        <div class="footer-links"><a href="#">View Source on GitHub</a></div>
     </footer>
 
     <script type="module" src="app.js"></script>
